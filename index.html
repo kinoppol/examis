@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  @keyframes examisPulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  @keyframes examisFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes examisPop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid #f1f5f9; }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; font-family: 'Sarabun', system-ui, sans-serif; background: #f4f7f7; color: #0f172a; -webkit-font-smoothing: antialiased;">
+
+  <!-- ===================== HOME / ROLE LAUNCHER ===================== -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Home" style="min-height: 100vh; background: radial-gradient(120% 80% at 50% -10%, #ccfbf1 0%, #f4f7f7 55%);">
+      <div style="max-width: 1180px; margin: 0 auto; padding: 30px 28px 80px;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 44px; height: 44px; border-radius: 13px; background: linear-gradient(150deg, #0f766e, #134e4a); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px -8px rgba(15,118,110,.6);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#99f6e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"></path><path d="M9 8h7M9 12h5"></path></svg>
+            </div>
+            <div>
+              <div style="font-size: 22px; font-weight: 800; letter-spacing: -.5px;">examis</div>
+              <div style="font-size: 12.5px; color: #5b7572; margin-top: -2px;">ระบบจัดการการสอบปลายภาคออนไลน์</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #e2e8f0; padding: 7px 14px; border-radius: 999px; font-size: 13px; color: #475569; box-shadow: 0 1px 2px rgba(15,23,42,.04);">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: #16a34a; animation: examisPulse 2s infinite;"></span>
+            ภาคเรียนที่ 2/2568 · เปิดระบบสอบ
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 56px auto 14px; max-width: 760px;">
+          <div style="display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cdeae6; color: #0f766e; padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; margin-bottom: 22px; white-space: nowrap;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"></path><circle cx="12" cy="12" r="9"></circle></svg>
+            ลดการพิมพ์ข้อสอบกระดาษที่ต้องทำลายทิ้ง
+          </div>
+          <h1 style="font-size: clamp(32px, 5vw, 52px); line-height: 1.08; font-weight: 800; letter-spacing: -1.2px; margin: 0;">สอบปลายภาคอย่างมั่นใจ<br><span style="color: #0f766e;">ไร้กระดาษ ปลอดภัย ตรวจง่าย</span></h1>
+          <p style="font-size: 17px; color: #51635f; line-height: 1.6; margin: 20px auto 0; max-width: 600px;">นักเรียนทำข้อสอบผ่านมือถือหรือคอมพิวเตอร์ ครูเตรียมข้อสอบได้หลายรูปแบบ — พิมพ์เอง สแกนเข้าระบบ หรือนำเข้าเป็นไฟล์ข้อความ พร้อมกระดาษคำตอบเสมือนที่ตรวจอัตโนมัติ</p>
+        </div>
+
+        <div style="text-align: center; font-size: 13.5px; font-weight: 600; color: #5b7572; letter-spacing: .3px; margin: 46px 0 18px;">เลือกบทบาทเพื่อเข้าใช้งาน</div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(264px, 1fr)); gap: 18px;">
+          <sc-for list="{{ roleCards }}" as="card" hint-placeholder-count="6">
+            <button onClick="{{ card.open }}" style="text-align: left; cursor: pointer; background: #ffffff; border: 1px solid #e6edec; border-radius: 18px; padding: 24px 22px; display: flex; flex-direction: column; gap: 14px; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; box-shadow: 0 1px 2px rgba(15,23,42,.04); font-family: inherit;" style-hover="transform: translateY(-4px); box-shadow: 0 22px 40px -22px rgba(15,118,110,.45); border-color: #99f6e4;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="width: 50px; height: 50px; border-radius: 14px; background: {{ card.iconBg }}; display: flex; align-items: center; justify-content: center;">{{ card.icon }}</div>
+                <span style="font-size: 11.5px; font-weight: 700; color: #0f766e; background: #f0fdfa; border: 1px solid #cdeae6; padding: 4px 10px; border-radius: 999px; white-space: nowrap;">{{ card.tag }}</span>
+              </div>
+              <div>
+                <div style="font-size: 18px; font-weight: 700; letter-spacing: -.3px;">{{ card.title }}</div>
+                <div style="font-size: 12px; color: #94a3b8; font-weight: 600; margin-top: 1px;">{{ card.role }}</div>
+              </div>
+              <div style="font-size: 14px; color: #51635f; line-height: 1.5;">{{ card.desc }}</div>
+              <div style="display: flex; align-items: center; gap: 6px; color: #0f766e; font-weight: 600; font-size: 14px; margin-top: 2px;">เข้าใช้งาน
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+              </div>
+            </button>
+          </sc-for>
+        </div>
+
+        <div style="margin-top: 26px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+          <sc-for list="{{ homeStats }}" as="s" hint-placeholder-count="3">
+            <div style="background: #ffffff; border: 1px solid #e6edec; border-radius: 14px; padding: 18px 20px; display: flex; align-items: center; gap: 14px;">
+              <div style="width: 40px; height: 40px; border-radius: 11px; background: #f0fdfa; display: flex; align-items: center; justify-content: center; color: #0f766e;">{{ s.icon }}</div>
+              <div>
+                <div style="font-size: 22px; font-weight: 800; letter-spacing: -.5px;">{{ s.value }}</div>
+                <div style="font-size: 12.5px; color: #64748b;">{{ s.label }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== STUDENT FLOW ===================== -->
+  <sc-if value="{{ isStudentLogin }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Student Login" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: radial-gradient(130% 90% at 50% 0%, #134e4a 0%, #0c3d39 50%, #082c29 100%);">
+      <div style="width: 100%; max-width: 430px;">
+        <button onClick="{{ goHome }}" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); color: #a7f3d0; padding: 7px 14px; border-radius: 999px; font-size: 13px; cursor: pointer; font-family: inherit; margin-bottom: 18px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg> หน้าหลัก
+        </button>
+        <div style="background: #ffffff; border-radius: 22px; padding: 30px 28px 28px; box-shadow: 0 30px 70px -30px rgba(0,0,0,.6);">
+          <div style="display: flex; align-items: center; gap: 11px; margin-bottom: 22px;">
+            <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(150deg, #0f766e, #134e4a); display: flex; align-items: center; justify-content: center;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#99f6e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"></path><path d="M9 8h7M9 12h5"></path></svg>
+            </div>
+            <div><div style="font-weight: 800; font-size: 17px;">เข้าสู่การสอบ</div><div style="font-size: 12.5px; color: #94a3b8;">ลงชื่อและกรอกรหัสจากผู้คุมห้องสอบ</div></div>
+          </div>
+
+          <div style="background: #f0fdfa; border: 1px solid #cdeae6; border-radius: 14px; padding: 14px 16px; margin-bottom: 20px; display: flex; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="9"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+            <div style="font-size: 13px; color: #0f766e; line-height: 1.5;"><b>วิทยาศาสตร์ ม.3</b> · ห้องสอบ 304 · เริ่ม 09:00 น.<br>กรอกรหัส 6 หลักที่ผู้คุมห้องประกาศเพื่อเริ่มสอบ</div>
+          </div>
+
+          <label style="font-size: 13px; font-weight: 600; color: #334155; display: block; margin-bottom: 7px;">ชื่อ–นามสกุล / เลขประจำตัว</label>
+          <div style="background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; font-size: 15px; color: #0f172a; margin-bottom: 18px; display: flex; align-items: center; gap: 10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>
+            ด.ช. ธนกฤต ใจดี · 13045
+          </div>
+
+          <label style="font-size: 13px; font-weight: 600; color: #334155; display: block; margin-bottom: 9px;">รหัสเข้าสอบ (PIN)</label>
+          <div style="display: flex; gap: 9px; justify-content: space-between; margin-bottom: 6px;">
+            <sc-for list="{{ pinBoxes }}" as="d" hint-placeholder-count="6">
+              <div style="flex: 1; aspect-ratio: 1 / 1.12; border-radius: 13px; border: 2px solid {{ d.border }}; background: {{ d.bg }}; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; color: #0f766e;">{{ d.char }}</div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ pinError }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 13px; color: #dc2626; margin-top: 8px;">รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง</div>
+          </sc-if>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 18px;">
+            <sc-for list="{{ keypad }}" as="k" hint-placeholder-count="12">
+              <button onClick="{{ k.press }}" style="padding: 16px 0; border-radius: 13px; border: 1px solid #e2e8f0; background: {{ k.bg }}; font-size: 20px; font-weight: 700; color: {{ k.color }}; cursor: pointer; font-family: inherit; transition: background .12s;" style-hover="background: #f0fdfa;">{{ k.label }}</button>
+            </sc-for>
+          </div>
+
+          <button onClick="{{ startExam }}" style="width: 100%; margin-top: 18px; padding: 15px; border-radius: 13px; border: none; background: {{ startBtnBg }}; color: #ffffff; font-size: 16px; font-weight: 700; cursor: {{ startBtnCursor }}; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            เริ่มทำข้อสอบ
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </button>
+        </div>
+        <div style="text-align: center; color: #6ee7d4; font-size: 12.5px; margin-top: 16px;">ใช้รหัสไม่ได้? แจ้งผู้คุมห้องสอบเพื่อขอสอบนอกเวลา</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- STUDENT EXAM -->
+  <sc-if value="{{ isStudentExam }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Student Exam" style="min-height: 100vh; background: #eef2f3; display: flex; flex-direction: column;">
+      <!-- exam top bar -->
+      <div style="position: sticky; top: 0; z-index: 20; background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 11px 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(15,23,42,.04);">
+        <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: #f0fdfa; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"></path><path d="M9 8h7"></path></svg>
+          </div>
+          <div style="min-width: 0;">
+            <div style="font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">วิทยาศาสตร์ ม.3 · ปลายภาค 2/2568</div>
+            <div style="font-size: 12px; color: #64748b;">ด.ช. ธนกฤต ใจดี · เลขที่นั่ง 12</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: {{ saveColor }};">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: {{ saveColor }}; {{ saveAnim }}"></span>{{ saveText }}
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; background: {{ timerBg }}; border: 1px solid {{ timerBorder }}; color: {{ timerColor }}; padding: 8px 14px; border-radius: 11px; font-weight: 800; font-size: 17px; font-variant-numeric: tabular-nums;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2.5M9 2h6"></path></svg>
+            {{ timeStr }}
+          </div>
+        </div>
+      </div>
+
+      <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 16px; padding: 16px; align-items: flex-start; max-width: 1280px; margin: 0 auto; width: 100%;">
+
+        <!-- SCANNED PDF VIEWER -->
+        <div style="flex: 1 1 420px; min-width: 300px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; align-self: stretch; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #eef2f3;">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"></path><path d="M14 2v6h6"></path></svg>
+              ข้อสอบ (สแกน PDF)
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button onClick="{{ prevPage }}" style="width: 30px; height: 30px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #475569;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+              <span style="font-size: 13px; color: #475569; min-width: 64px; text-align: center;">หน้า {{ currentPage }} / 4</span>
+              <button onClick="{{ nextPage }}" style="width: 30px; height: 30px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #475569;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+            </div>
+          </div>
+          <div style="background: #e2e8e8; padding: 18px; flex: 1; overflow: auto; max-height: 70vh;">
+            <div style="background: #fdfdfb; max-width: 480px; margin: 0 auto; padding: 38px 40px; box-shadow: 0 6px 24px -8px rgba(0,0,0,.28); border-radius: 3px; font-size: 14px; line-height: 1.85; color: #1e293b; min-height: 560px;">
+              <div style="text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 12px; margin-bottom: 18px;">
+                <div style="font-weight: 700; font-size: 15px;">ข้อสอบปลายภาค วิชาวิทยาศาสตร์</div>
+                <div style="font-size: 12.5px; color: #475569;">ชั้นมัธยมศึกษาปีที่ 3 · ภาคเรียนที่ 2/2568</div>
+              </div>
+              <div style="font-weight: 700; margin-bottom: 8px;">ตอนที่ 1 จงเลือกคำตอบที่ถูกต้องที่สุด</div>
+              <sc-for list="{{ pdfQuestions }}" as="q" hint-placeholder-count="4">
+                <div style="margin-bottom: 16px;">
+                  <div style="font-weight: 600;">{{ q.num }}. {{ q.text }}</div>
+                  <div style="padding-left: 14px; color: #334155;">
+                    <div>ก. {{ q.a }}</div>
+                    <div>ข. {{ q.b }}</div>
+                    <div>ค. {{ q.c }}</div>
+                    <div>ง. {{ q.d }}</div>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="text-align: center; color: #94a3b8; font-size: 12px; margin-top: 24px;">— ทำต่อหน้าถัดไป —</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIRTUAL ANSWER SHEET -->
+        <div style="flex: 1 1 360px; min-width: 280px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; align-self: stretch; display: flex; flex-direction: column;">
+          <div style="padding: 12px 16px; border-bottom: 1px solid #eef2f3; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+              กระดาษคำตอบเสมือน
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button onClick="{{ toggleMask }}" title="ซ่อนคำตอบจากสายตาคนข้างเคียง" style="display: flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; border: 1px solid {{ maskBorder }}; background: {{ maskBg }}; color: {{ maskColor }}; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap;">{{ maskIcon }}ปิดบังคำตอบ</button>
+              <div style="font-size: 12.5px; font-weight: 700; color: #0f766e; background: #f0fdfa; border: 1px solid #cdeae6; padding: 4px 11px; border-radius: 999px; white-space: nowrap;">ตอบแล้ว {{ answeredCount }}/40</div>
+            </div>
+          </div>
+          <div style="padding: 6px 16px 0;">
+            <div style="height: 7px; border-radius: 99px; background: #eef2f3; overflow: hidden;"><div style="height: 100%; width: {{ progressPct }}; background: linear-gradient(90deg, #0f766e, #14b8a6); border-radius: 99px; transition: width .3s ease;"></div></div>
+          </div>
+          <div style="padding: 14px 14px 8px; overflow: auto; max-height: 62vh;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 4px 10px;">
+              <sc-for list="{{ sheetRows }}" as="row" hint-placeholder-count="40">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 9px; background: {{ row.rowBg }};">
+                  <span style="font-size: 13px; font-weight: 700; color: #475569; width: 22px; text-align: right; font-variant-numeric: tabular-nums;">{{ row.n }}</span>
+                  <sc-if value="{{ row.shown }}" hint-placeholder-val="{{ true }}">
+                    <div style="display: flex; gap: 5px;">
+                      <sc-for list="{{ row.bubbles }}" as="b" hint-placeholder-count="4">
+                        <button onClick="{{ b.pick }}" style="position: relative; width: 27px; height: 27px; border-radius: 50%; border: 1.5px solid #cbd5e1; background: #fff; cursor: pointer; font-size: 12.5px; font-weight: 700; color: #94a3b8; display: flex; align-items: center; justify-content: center; padding: 0; font-family: inherit;">
+                          {{ b.label }}
+                          <sc-if value="{{ b.selected }}" hint-placeholder-val="{{ false }}">
+                            <span style="position: absolute; inset: -1.5px; border-radius: 50%; background: #0f766e; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 700; animation: examisPop .18s ease;">{{ b.label }}</span>
+                          </sc-if>
+                        </button>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ row.masked }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ row.peek }}" title="แตะเพื่อดู/แก้คำตอบ" style="height: 27px; display: flex; align-items: center; gap: 6px; padding: 0 13px; border-radius: 99px; border: 1.5px solid #99f6e4; background: #f0fdfa; cursor: pointer; font-family: inherit; color: #0f766e; font-size: 11.5px; font-weight: 700; white-space: nowrap; animation: examisPop .18s ease;">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+                      ตอบแล้ว
+                    </button>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="margin-top: auto; padding: 14px 16px; border-top: 1px solid #eef2f3; display: flex; gap: 10px; align-items: center;">
+            <div style="flex: 1; font-size: 12.5px; color: #64748b;">เหลืออีก {{ remaining }} ข้อ · ระบบบันทึกอัตโนมัติ</div>
+            <button onClick="{{ submitExam }}" style="padding: 12px 22px; border-radius: 12px; border: none; background: #0f766e; color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px;" style-hover="background: #0d6660;">
+              ส่งข้อสอบ
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- STUDENT DONE -->
+  <sc-if value="{{ isStudentDone }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Student Done" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: radial-gradient(130% 90% at 50% 0%, #0f766e 0%, #0c3d39 60%);">
+      <div style="background: #fff; border-radius: 24px; padding: 44px 36px; max-width: 440px; text-align: center; box-shadow: 0 30px 70px -30px rgba(0,0,0,.5); animation: examisPop .4s ease both;">
+        <div style="width: 76px; height: 76px; border-radius: 50%; background: #dcfce7; display: flex; align-items: center; justify-content: center; margin: 0 auto 22px;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>
+        </div>
+        <h2 style="margin: 0 0 8px; font-size: 24px; font-weight: 800;">ส่งข้อสอบเรียบร้อย</h2>
+        <p style="margin: 0; color: #64748b; font-size: 15px; line-height: 1.6;">ระบบได้บันทึกคำตอบของคุณแล้ว <b style="color: #0f766e;">{{ answeredCount }}/40 ข้อ</b><br>คุณสามารถออกจากห้องสอบได้</p>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; margin: 22px 0; text-align: left; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 14px;"><span style="color: #64748b;">วิชา</span><b>วิทยาศาสตร์ ม.3</b></div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px;"><span style="color: #64748b;">เวลาส่ง</span><b>{{ submitTime }}</b></div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px;"><span style="color: #64748b;">สถานะ</span><b style="color: #16a34a;">บันทึกสำเร็จ ✓</b></div>
+        </div>
+        <button onClick="{{ goHome }}" style="width: 100%; padding: 14px; border-radius: 13px; border: 1px solid #e2e8f0; background: #fff; color: #334155; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit;">กลับหน้าหลัก</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== APP SHELL (staff roles) ===================== -->
+  <sc-if value="{{ isShell }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="{{ shellLabel }}" style="display: flex; min-height: 100vh;">
+      <!-- sidebar -->
+      <aside style="width: 252px; flex-shrink: 0; background: #ffffff; border-right: 1px solid #e6edec; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;">
+        <button onClick="{{ goHome }}" style="display: flex; align-items: center; gap: 10px; padding: 18px 18px; border: none; background: none; cursor: pointer; font-family: inherit; border-bottom: 1px solid #f1f5f9;">
+          <div style="width: 38px; height: 38px; border-radius: 11px; background: linear-gradient(150deg, #0f766e, #134e4a); display: flex; align-items: center; justify-content: center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#99f6e4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"></path><path d="M9 8h7M9 12h5"></path></svg>
+          </div>
+          <div style="text-align: left;"><div style="font-weight: 800; font-size: 17px; letter-spacing: -.3px;">examis</div><div style="font-size: 11px; color: #94a3b8;">ระบบสอบออนไลน์</div></div>
+        </button>
+
+        <div style="padding: 14px 12px; flex: 1; overflow: auto;">
+          <div style="font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: .6px; padding: 6px 10px 8px;">{{ roleLabel }}</div>
+          <div style="display: flex; flex-direction: column; gap: 3px;">
+            <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="3">
+              <button onClick="{{ n.go }}" style="display: flex; align-items: center; gap: 11px; padding: 11px 12px; border-radius: 11px; border: none; cursor: pointer; font-family: inherit; font-size: 14.5px; font-weight: 600; text-align: left; white-space: nowrap; background: {{ n.bg }}; color: {{ n.color }};">
+                <span style="display: flex; color: {{ n.iconColor }};">{{ n.icon }}</span>{{ n.label }}
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="padding: 12px; border-top: 1px solid #f1f5f9;">
+          <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 11px; background: #f8fafc;">
+            <div style="width: 34px; height: 34px; border-radius: 50%; background: {{ userColor }}; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">{{ userInitial }}</div>
+            <div style="min-width: 0;"><div style="font-size: 13.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ userName }}</div><div style="font-size: 11.5px; color: #94a3b8;">{{ roleLabel }}</div></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- main -->
+      <main style="flex: 1; min-width: 0; display: flex; flex-direction: column; background: #f4f7f7;">
+        <header style="background: #ffffff; border-bottom: 1px solid #e6edec; padding: 16px 26px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+          <div>
+            <h1 style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -.4px;">{{ pageTitle }}</h1>
+            <div style="font-size: 13px; color: #64748b; margin-top: 2px;">{{ pageSub }}</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 7px; font-size: 13px; color: #475569; background: #f0fdfa; border: 1px solid #cdeae6; padding: 7px 13px; border-radius: 999px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #16a34a; animation: examisPulse 2s infinite;"></span>ภาคเรียนที่ 2/2568</div>
+          </div>
+        </header>
+
+        <div style="padding: 24px 26px 60px; flex: 1;">
+
+          <!-- ========= SUPERVISOR ========= -->
+          <sc-if value="{{ isSupervisor }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch;">
+              <div style="flex: 1 1 320px; max-width: 400px; background: linear-gradient(160deg, #0f766e, #134e4a); border-radius: 20px; padding: 26px 24px; color: #fff; box-shadow: 0 20px 40px -22px rgba(15,118,110,.7);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+                  <div style="font-size: 14px; opacity: .85;">ห้องสอบ 304 · วิทยาศาสตร์ ม.3</div>
+                  <span style="font-size: 12px; font-weight: 700; background: rgba(255,255,255,.15); padding: 4px 11px; border-radius: 999px;">กำลังสอบ</span>
+                </div>
+                <div style="font-size: 13px; opacity: .8; margin-bottom: 8px;">รหัสเข้าสอบ (แจ้งนักเรียน)</div>
+                <div style="display: flex; gap: 9px; margin-bottom: 20px;">
+                  <sc-for list="{{ supPin }}" as="c" hint-placeholder-count="6">
+                    <div style="flex: 1; background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.25); border-radius: 13px; padding: 16px 0; text-align: center; font-size: 30px; font-weight: 800; letter-spacing: 1px;">{{ c }}</div>
+                  </sc-for>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  <button onClick="{{ regenPin }}" style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 7px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"></path><path d="M21 3v5h-5"></path></svg>สุ่มรหัสใหม่</button>
+                  <button style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: #fff; color: #0f766e; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit;">แสดงเต็มจอ</button>
+                </div>
+                <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.18); display: flex; justify-content: space-between; font-size: 13px;">
+                  <div style="white-space: nowrap;"><div style="opacity: .75;">เริ่มสอบ</div><div style="font-weight: 700; font-size: 15px;">09:00 น.</div></div>
+                  <div style="white-space: nowrap;"><div style="opacity: .75;">เหลือเวลา</div><div style="font-weight: 700; font-size: 15px;">52:18</div></div>
+                  <div style="white-space: nowrap;"><div style="opacity: .75;">เข้าสอบแล้ว</div><div style="font-weight: 700; font-size: 15px;">{{ supCheckedIn }}/32</div></div>
+                </div>
+              </div>
+
+              <div style="flex: 2 1 380px; background: #fff; border: 1px solid #e6edec; border-radius: 18px; overflow: hidden;">
+                <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                  <div style="font-weight: 700; font-size: 15px; white-space: nowrap;">รายชื่อผู้เข้าสอบ</div>
+                  <div style="display: flex; gap: 6px;">
+                    <span style="font-size: 12px; color: #16a34a; background: #f0fdf4; padding: 4px 10px; border-radius: 999px; font-weight: 600;">เข้าสอบ {{ supCheckedIn }}</span>
+                    <span style="font-size: 12px; color: #d97706; background: #fffbeb; padding: 4px 10px; border-radius: 999px; font-weight: 600;">ยังไม่เข้า {{ supPending }}</span>
+                  </div>
+                </div>
+                <div style="max-height: 60vh; overflow: auto;">
+                  <sc-for list="{{ supStudents }}" as="st" hint-placeholder-count="8">
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #f6f8f8;">
+                      <div style="width: 34px; height: 34px; border-radius: 50%; background: {{ st.avBg }}; color: {{ st.avColor }}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0;">{{ st.initial }}</div>
+                      <div style="flex: 1; min-width: 0;"><div style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ st.name }}</div><div style="font-size: 12px; color: #94a3b8; white-space: nowrap;">เลขที่ {{ st.no }} · {{ st.id }}</div></div>
+                      <span style="font-size: 12px; font-weight: 700; color: {{ st.statusColor }}; background: {{ st.statusBg }}; padding: 5px 11px; border-radius: 999px; white-space: nowrap;">{{ st.status }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ========= DEPUTY DASHBOARD ========= -->
+          <sc-if value="{{ isDeputy }}" hint-placeholder-val="{{ false }}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 20px;">
+              <sc-for list="{{ deputyStats }}" as="s" hint-placeholder-count="4">
+                <div style="background: #fff; border: 1px solid #e6edec; border-radius: 16px; padding: 20px;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                    <div style="width: 38px; height: 38px; border-radius: 11px; background: {{ s.iconBg }}; display: flex; align-items: center; justify-content: center;">{{ s.icon }}</div>
+                    <span style="font-size: 12px; font-weight: 700; white-space: nowrap; color: {{ s.deltaColor }};">{{ s.delta }}</span>
+                  </div>
+                  <div style="font-size: 30px; font-weight: 800; letter-spacing: -1px;">{{ s.value }}</div>
+                  <div style="font-size: 13px; color: #64748b;">{{ s.label }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; align-items: start;">
+              <div style="background: #fff; border: 1px solid #e6edec; border-radius: 18px; padding: 22px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+                  <div><div style="font-weight: 700; font-size: 16px;">การสอบที่กำลังดำเนินอยู่</div><div style="font-size: 13px; color: #64748b;">อัปเดตเรียลไทม์ทุก 10 วินาที</div></div>
+                  <span style="font-size: 12px; color: #16a34a; background: #f0fdf4; padding: 5px 12px; border-radius: 999px; font-weight: 700; display: flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a; animation: examisPulse 1.6s infinite;"></span>LIVE</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                  <sc-for list="{{ liveExams }}" as="e" hint-placeholder-count="4">
+                    <div style="border: 1px solid #eef2f3; border-radius: 14px; padding: 14px 16px;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                          <div style="width: 40px; height: 40px; border-radius: 11px; background: {{ e.color }}; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;">{{ e.room }}</div>
+                          <div><div style="font-weight: 700; font-size: 14.5px;">{{ e.subject }}</div><div style="font-size: 12.5px; color: #94a3b8;">{{ e.level }} · ผู้คุม {{ e.supervisor }}</div></div>
+                        </div>
+                        <span style="font-size: 12px; font-weight: 700; white-space: nowrap; color: {{ e.statusColor }}; background: {{ e.statusBg }}; padding: 5px 12px; border-radius: 999px;">{{ e.status }}</span>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="flex: 1; height: 8px; border-radius: 99px; background: #eef2f3; overflow: hidden;"><div style="height: 100%; width: {{ e.pct }}; background: {{ e.color }}; border-radius: 99px;"></div></div>
+                        <div style="font-size: 12.5px; color: #475569; font-weight: 600; white-space: nowrap;">{{ e.submitted }}/{{ e.total }} ส่งแล้ว</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="background: #fff; border: 1px solid #e6edec; border-radius: 18px; padding: 22px;">
+                  <div style="font-weight: 700; font-size: 15px; margin-bottom: 16px;">ความคืบหน้ารวมวันนี้</div>
+                  <div style="display: flex; align-items: flex-end; gap: 8px; height: 130px;">
+                    <sc-for list="{{ deputyBars }}" as="b" hint-placeholder-count="7">
+                      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end;">
+                        <div style="width: 100%; border-radius: 6px 6px 3px 3px; background: {{ b.color }}; height: {{ b.h }};"></div>
+                        <div style="font-size: 11px; color: #94a3b8;">{{ b.label }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background: #fff; border: 1px solid #e6edec; border-radius: 18px; padding: 22px;">
+                  <div style="font-weight: 700; font-size: 15px; margin-bottom: 14px;">ต้องติดตาม</div>
+                  <div style="display: flex; flex-direction: column; gap: 11px;">
+                    <sc-for list="{{ deputyAlerts }}" as="a" hint-placeholder-count="3">
+                      <div style="display: flex; gap: 11px; align-items: flex-start;">
+                        <div style="width: 30px; height: 30px; border-radius: 9px; background: {{ a.bg }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">{{ a.icon }}</div>
+                        <div style="font-size: 13px; line-height: 1.4; color: #334155;">{{ a.text }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ========= MANAGER: SCHEDULE ========= -->
+          <sc-if value="{{ isManager }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+              <div style="display: flex; gap: 8px;">
+                <span style="font-size: 13px; font-weight: 700; color: #0f766e; background: #f0fdfa; border: 1px solid #cdeae6; padding: 8px 14px; border-radius: 10px;">ปลายภาค 2/2568</span>
+                <span style="font-size: 13px; color: #64748b; background: #fff; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 10px;">18–22 มี.ค. 2569</span>
+              </div>
+              <button style="display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 11px; border: none; background: #0f766e; color: #fff; font-weight: 700; font-size: 14px; white-space: nowrap; cursor: pointer; font-family: inherit;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>เพิ่มตารางสอบ</button>
+            </div>
+            <div style="background: #fff; border: 1px solid #e6edec; border-radius: 18px; overflow: hidden;">
+              <div style="display: grid; grid-template-columns: 88px 1.4fr 1fr 1fr 1.1fr 0.9fr; gap: 12px; padding: 13px 22px; background: #f8fafc; border-bottom: 1px solid #eef2f3; font-size: 12.5px; font-weight: 700; color: #64748b;">
+                <div>เวลา</div><div>วิชา</div><div>ห้องสอบ</div><div>ผู้คุมสอบ</div><div>รหัสเข้าสอบ</div><div>สถานะ</div>
+              </div>
+              <sc-for list="{{ scheduleRows }}" as="r" hint-placeholder-count="6">
+                <div style="display: grid; grid-template-columns: 88px 1.4fr 1fr 1fr 1.1fr 0.9fr; gap: 12px; padding: 15px 22px; border-bottom: 1px solid #f6f8f8; align-items: center;">
+                  <div><div style="font-weight: 700; font-size: 14px;">{{ r.time }}</div><div style="font-size: 11.5px; color: #94a3b8;">{{ r.date }}</div></div>
+                  <div style="display: flex; align-items: center; gap: 10px;"><div style="width: 34px; height: 34px; border-radius: 9px; background: {{ r.subjColor }}; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;">{{ r.subjAbbr }}</div><div><div style="font-weight: 600; font-size: 14px;">{{ r.subject }}</div><div style="font-size: 11.5px; color: #94a3b8;">{{ r.level }}</div></div></div>
+                  <div style="font-size: 13.5px;">{{ r.room }}</div>
+                  <div style="font-size: 13.5px;">{{ r.supervisor }}</div>
+                  <div><span style="font-family: 'Sarabun'; font-weight: 800; font-size: 15px; letter-spacing: 1px; color: #0f766e; background: #f0fdfa; border: 1px dashed #99f6e4; padding: 4px 10px; border-radius: 8px;">{{ r.code }}</span></div>
+                  <div><span style="font-size: 12px; font-weight: 700; white-space: nowrap; color: {{ r.statusColor }}; background: {{ r.statusBg }}; padding: 5px 11px; border-radius: 999px;">{{ r.status }}</span></div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- ========= MANAGER: PERMISSION ========= -->
+          <sc-if value="{{ isPermission }}" hint-placeholder-val="{{ false }}">
+            <div style="display: grid; grid-template-columns: 1fr; gap: 16px; max-width: 880px;">
+              <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 14px; padding: 16px 20px; display: flex; gap: 12px; align-items: flex-start;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><path d="M12 9v4M12 17h.01"></path><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>
+                <div style="font-size: 13.5px; color: #92400e; line-height: 1.5;">คำขอสอบนอกเวลาสำหรับนักเรียนที่ไม่สามารถเข้าสอบตามกำหนด เช่น ป่วย หรือติดภารกิจ — อนุมัติเพื่อเปิดสิทธิ์สอบในช่วงเวลาพิเศษ</div>
+              </div>
+              <div style="background: #fff; border: 1px solid #e6edec; border-radius: 18px; overflow: hidden;">
+                <sc-for list="{{ permRequests }}" as="p" hint-placeholder-count="4">
+                  <div style="padding: 18px 22px; border-bottom: 1px solid #f6f8f8; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                    <div style="width: 42px; height: 42px; border-radius: 50%; background: {{ p.avBg }}; color: {{ p.avColor }}; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">{{ p.initial }}</div>
+                    <div style="flex: 1; min-width: 180px;">
+                      <div style="font-weight: 700; font-size: 15px;">{{ p.name }} <span style="font-weight: 400; color: #94a3b8; font-size: 13px;">· {{ p.level }}</span></div>
+                      <div style="font-size: 13px; color: #64748b; margin-top: 2px;">{{ p.subject }} · เหตุผล: {{ p.reason }}</div>
+                    </div>
+                    <div style="text-align: right; margin-right: 4px; white-space: nowrap;"><div style="font-size: 12px; color: #94a3b8;">ขอสอบวันที่</div><div style="font-weight: 700; font-size: 14px;">{{ p.requestDate }}</div></div>
+                    <sc-if value="{{ p.pending }}" hint-placeholder-val="{{ true }}">
+                      <div style="display: flex; gap: 8px;">
+                        <button onClick="{{ p.approve }}" style="padding: 9px 18px; border-radius: 10px; border: none; background: #0f766e; color: #fff; font-weight: 700; font-size: 13.5px; white-space: nowrap; cursor: pointer; font-family: inherit;">อนุมัติ</button>
+                        <button onClick="{{ p.reject }}" style="padding: 9px 16px; border-radius: 10px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-weight: 700; font-size: 13.5px; white-space: nowrap; cursor: pointer; font-family: inherit;">ปฏิเสธ</button>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ p.done }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size: 13px; font-weight: 700; color: {{ p.resultColor }}; background: {{ p.resultBg }}; padding: 8px 16px; border-radius: 10px;">{{ p.resultText }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ========= TEACHER: BANK ========= -->
+          <sc-if value="{{ isTeacherList }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+              <div style="display: flex; gap: 8px;">
+                <span style="font-size: 13px; font-weight: 700; color: #fff; background: #0f766e; padding: 8px 14px; border-radius: 10px;">ทั้งหมด</span>
+                <span style="font-size: 13px; color: #64748b; background: #fff; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 10px;">เผยแพร่แล้ว</span>
+                <span style="font-size: 13px; color: #64748b; background: #fff; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 10px;">ฉบับร่าง</span>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button onClick="{{ goImport }}" style="display: flex; align-items: center; gap: 7px; padding: 10px 16px; border-radius: 11px; border: 1px solid #e2e8f0; background: #fff; color: #334155; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"></path></svg>นำเข้า Text</button>
+                <button onClick="{{ goBuild }}" style="display: flex; align-items: center; gap: 7px; padding: 10px 18px; border-radius: 11px; border: none; background: #0f766e; color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>สร้างข้อสอบ</button>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px;">
+              <sc-for list="{{ examBank }}" as="x" hint-placeholder-count="6">
+                <div style="background: #fff; border: 1px solid #e6edec; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px;">
+                  <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+                    <div style="width: 44px; height: 44px; border-radius: 12px; background: {{ x.color }}; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;">{{ x.abbr }}</div>
+                    <span style="font-size: 11.5px; font-weight: 700; color: {{ x.statusColor }}; background: {{ x.statusBg }}; padding: 4px 11px; border-radius: 999px;">{{ x.status }}</span>
+                  </div>
+                  <div><div style="font-weight: 700; font-size: 15.5px; letter-spacing: -.2px;">{{ x.title }}</div><div style="font-size: 12.5px; color: #94a3b8; margin-top: 2px;">{{ x.level }} · แก้ไข {{ x.updated }}</div></div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    <sc-for list="{{ x.types }}" as="t" hint-placeholder-count="2">
+                      <span style="font-size: 11.5px; color: #475569; background: #f1f5f9; padding: 3px 9px; border-radius: 7px;">{{ t }}</span>
+                    </sc-for>
+                  </div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                    <span style="font-size: 13px; color: #64748b;">{{ x.count }} ข้อ · {{ x.points }} คะแนน</span>
+                    <button style="font-size: 13px; font-weight: 700; color: #0f766e; background: none; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 4px;">เปิด<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- ========= TEACHER: BUILD ========= -->
+          <sc-if value="{{ isBuild }}" hint-placeholder-val="{{ false }}">
+            <div style="display: grid; grid-template-columns: 230px 1fr; gap: 20px; align-items: start;">
+              <div style="background: #fff; border: 1px solid #e6edec; border-radius: 16px; padding: 16px;">
+                <div style="font-size: 12.5px; font-weight: 700; color: #94a3b8; padding: 4px 8px 10px;">รูปแบบข้อสอบ</div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <sc-for list="{{ qTypes }}" as="t" hint-placeholder-count="6">
+                    <button onClick="{{ t.pick }}" style="display: flex; align-items: center; gap: 11px; padding: 11px 12px; border-radius: 11px; border: 1px solid {{ t.border }}; background: {{ t.bg }}; cursor: pointer; font-family: inherit; text-align: left;">
+                      <span style="display: flex; color: {{ t.iconColor }};">{{ t.icon }}</span>
+                      <span style="font-size: 13.5px; font-weight: 600; color: {{ t.color }};">{{ t.label }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="background: #fff; border: 1px solid #e6edec; border-radius: 18px; padding: 24px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+                  <div><div style="font-size: 12.5px; color: #94a3b8; font-weight: 600;">ข้อ 3 · {{ activeType }}</div><div style="font-weight: 700; font-size: 16px;">แก้ไขข้อสอบ</div></div>
+                  <div style="display: flex; gap: 8px;"><button style="padding: 9px 16px; border-radius: 10px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-weight: 700; font-size: 13.5px; cursor: pointer; font-family: inherit;">ดูตัวอย่าง</button><button style="padding: 9px 18px; border-radius: 10px; border: none; background: #0f766e; color: #fff; font-weight: 700; font-size: 13.5px; cursor: pointer; font-family: inherit;">บันทึก</button></div>
+                </div>
+                <label style="font-size: 13px; font-weight: 600; color: #334155; display: block; margin-bottom: 8px;">คำถาม</label>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; font-size: 15px; line-height: 1.6; margin-bottom: 20px;">ข้อใดคือหน่วยพื้นฐานที่เล็กที่สุดของสิ่งมีชีวิตที่สามารถทำงานได้ด้วยตัวเอง</div>
+                <label style="font-size: 13px; font-weight: 600; color: #334155; display: block; margin-bottom: 10px;">ตัวเลือก <span style="color: #94a3b8; font-weight: 400;">— แตะวงกลมเพื่อกำหนดคำตอบที่ถูก</span></label>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <sc-for list="{{ buildChoices }}" as="c" hint-placeholder-count="4">
+                    <div onClick="{{ c.setCorrect }}" style="display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 12px; border: 1.5px solid {{ c.border }}; background: {{ c.bg }}; cursor: pointer;">
+                      <div style="width: 26px; height: 26px; border-radius: 50%; border: 2px solid {{ c.dotBorder }}; background: {{ c.dotBg }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><sc-if value="{{ c.correct }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></sc-if></div>
+                      <span style="font-weight: 700; color: #94a3b8; width: 16px;">{{ c.label }}</span>
+                      <span style="font-size: 15px; color: #1e293b;">{{ c.text }}</span>
+                      <sc-if value="{{ c.correct }}" hint-placeholder-val="{{ false }}"><span style="margin-left: auto; font-size: 12px; font-weight: 700; color: #16a34a; background: #f0fdf4; padding: 4px 11px; border-radius: 999px;">คำตอบที่ถูก</span></sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display: flex; align-items: center; gap: 18px; margin-top: 22px; padding-top: 18px; border-top: 1px solid #f1f5f9; flex-wrap: wrap;">
+                  <label style="display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: #334155; cursor: pointer;"><span onClick="{{ toggleShuffle }}" style="width: 42px; height: 24px; border-radius: 99px; background: {{ shuffleBg }}; position: relative; transition: background .2s; flex-shrink: 0;"><span style="position: absolute; top: 2px; left: {{ shuffleLeft }}; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2);"></span></span>สุ่มลำดับตัวเลือก</label>
+                  <div style="display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: #334155;">คะแนน <div style="background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px 12px; font-weight: 700;">1</div></div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ========= TEACHER: IMPORT ========= -->
+          <sc-if value="{{ isImport }}" hint-placeholder-val="{{ false }}">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+              <div style="background: #fff; border: 1px solid #e6edec; border-radius: 18px; padding: 22px; display: flex; flex-direction: column;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                  <div style="font-weight: 700; font-size: 15px;">วางข้อสอบแบบข้อความ</div>
+                  <button onClick="{{ loadSample }}" style="font-size: 12.5px; font-weight: 700; color: #0f766e; background: #f0fdfa; border: 1px solid #cdeae6; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-family: inherit;">ใส่ตัวอย่าง</button>
+                </div>
+                <div style="font-size: 12.5px; color: #64748b; background: #f8fafc; border: 1px solid #eef2f3; border-radius: 10px; padding: 11px 14px; margin-bottom: 12px; line-height: 1.6;">รูปแบบ: บรรทัดคำถามขึ้นต้นด้วยตัวเลข แล้วตามด้วยตัวเลือก ก–ง ใส่ <b style="color: #0f766e;">*</b> หน้าตัวเลือกที่เป็นคำตอบถูก</div>
+                <textarea onInput="{{ onImportInput }}" value="{{ importText }}" spellcheck="false" style="flex: 1; min-height: 340px; width: 100%; resize: vertical; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-family: 'Sarabun', monospace; font-size: 13.5px; line-height: 1.7; color: #1e293b; background: #fcfdfd;"></textarea>
+              </div>
+              <div style="background: #fff; border: 1px solid #e6edec; border-radius: 18px; padding: 22px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                  <div style="font-weight: 700; font-size: 15px;">ตัวอย่างผลลัพธ์</div>
+                  <span style="font-size: 12.5px; font-weight: 700; color: #0f766e; background: #f0fdfa; border: 1px solid #cdeae6; padding: 4px 12px; border-radius: 999px;">{{ parsedCount }} ข้อ</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px; max-height: 460px; overflow: auto;">
+                  <sc-for list="{{ parsedQuestions }}" as="q" hint-placeholder-count="3">
+                    <div style="border: 1px solid #eef2f3; border-radius: 13px; padding: 14px 16px;">
+                      <div style="font-weight: 600; font-size: 14px; margin-bottom: 9px;">{{ q.num }}. {{ q.text }}</div>
+                      <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <sc-for list="{{ q.choices }}" as="c" hint-placeholder-count="4">
+                          <div style="display: flex; align-items: flex-start; gap: 9px; font-size: 13.5px; line-height: 1.45; color: {{ c.color }};">
+                            <span style="width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid {{ c.border }}; background: {{ c.bg }}; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: {{ c.labelColor }}; flex-shrink: 0;">{{ c.label }}</span>
+                            {{ c.text }}
+                            <sc-if value="{{ c.correct }}" hint-placeholder-val="{{ false }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg></sc-if>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+                <button style="width: 100%; margin-top: 16px; padding: 13px; border-radius: 12px; border: none; background: #0f766e; color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit;">นำเข้า {{ parsedCount }} ข้อสู่คลังข้อสอบ</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ========= ADMIN ========= -->
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin-bottom: 20px;">
+              <sc-for list="{{ adminStats }}" as="s" hint-placeholder-count="4">
+                <div style="background: #fff; border: 1px solid #e6edec; border-radius: 16px; padding: 18px 20px; display: flex; align-items: center; gap: 14px;">
+                  <div style="width: 42px; height: 42px; border-radius: 12px; background: {{ s.bg }}; display: flex; align-items: center; justify-content: center;">{{ s.icon }}</div>
+                  <div><div style="font-size: 24px; font-weight: 800;">{{ s.value }}</div><div style="font-size: 12.5px; color: #64748b;">{{ s.label }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background: #fff; border: 1px solid #e6edec; border-radius: 18px; overflow: hidden;">
+              <div style="padding: 16px 22px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                <div style="font-weight: 700; font-size: 15px;">จัดการผู้ใช้งาน</div>
+                <button style="display: flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 10px; border: none; background: #0f766e; color: #fff; font-weight: 700; font-size: 13.5px; white-space: nowrap; cursor: pointer; font-family: inherit;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>เพิ่มผู้ใช้</button>
+              </div>
+              <div style="display: grid; grid-template-columns: 1.6fr 1.2fr 1fr 0.8fr; gap: 12px; padding: 12px 22px; background: #f8fafc; border-bottom: 1px solid #eef2f3; font-size: 12.5px; font-weight: 700; color: #64748b;">
+                <div>ผู้ใช้งาน</div><div>บทบาท</div><div>สถานะ</div><div style="text-align: right;">จัดการ</div>
+              </div>
+              <sc-for list="{{ adminUsers }}" as="u" hint-placeholder-count="7">
+                <div style="display: grid; grid-template-columns: 1.6fr 1.2fr 1fr 0.8fr; gap: 12px; padding: 13px 22px; border-bottom: 1px solid #f6f8f8; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 11px; min-width: 0;"><div style="width: 36px; height: 36px; border-radius: 50%; background: {{ u.avBg }}; color: {{ u.avColor }}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0;">{{ u.initial }}</div><div style="min-width: 0;"><div style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ u.name }}</div><div style="font-size: 12px; color: #94a3b8; white-space: nowrap;">{{ u.username }}</div></div></div>
+                  <div><span style="font-size: 12.5px; font-weight: 700; color: {{ u.roleColor }}; background: {{ u.roleBg }}; padding: 5px 12px; border-radius: 999px;">{{ u.role }}</span></div>
+                  <div style="display: flex; align-items: center; gap: 7px; font-size: 13px; white-space: nowrap; color: {{ u.statusColor }};"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{ u.statusColor }};"></span>{{ u.statusText }}</div>
+                  <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                    <button title="รีเซ็ตรหัสผ่าน" style="width: 32px; height: 32px; border-radius: 9px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #475569;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></button>
+                    <button title="แก้ไข" style="width: 32px; height: 32px; border-radius: 9px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #475569;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg></button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+        </div>
+      </main>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ic = (path, opts) => React.createElement('svg', Object.assign({ width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }, opts || {}), path.map((d, i) => React.createElement('path', { key: i, d })));
+const circ = (cx, cy, r) => React.createElement('circle', { cx, cy, r });
+
+const ICONS = {
+  student: React.createElement('svg', { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: '#0f766e', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M22 10L12 5 2 10l10 5 10-5z' }), React.createElement('path', { d: 'M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5' }), React.createElement('path', { d: 'M22 10v5' })),
+  shield: React.createElement('svg', { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: '#7c3aed', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M12 3l8 3v6c0 4.5-3.2 7.5-8 9-4.8-1.5-8-4.5-8-9V6l8-3z' }), React.createElement('path', { d: 'M9 12l2 2 4-4' })),
+  calendar: React.createElement('svg', { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: '#2563eb', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('rect', { x: 3, y: 4.5, width: 18, height: 16, rx: 2.5 }), React.createElement('path', { d: 'M3 9h18M8 2.5v4M16 2.5v4' })),
+  pen: React.createElement('svg', { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: '#d97706', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M12 20h9' }), React.createElement('path', { d: 'M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z' })),
+  chart: React.createElement('svg', { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: '#0891b2', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M3 3v18h18' }), React.createElement('path', { d: 'M7 14l4-4 3 3 5-6' })),
+  cog: React.createElement('svg', { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: '#475569', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('circle', { cx: 12, cy: 12, r: 3.2 }), React.createElement('path', { d: 'M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2' })),
+};
+
+const navIcon = (name, color) => {
+  const P = { width: 19, height: 19, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const map = {
+    calendar: [React.createElement('rect', { key: 0, x: 3, y: 4.5, width: 18, height: 16, rx: 2.5 }), React.createElement('path', { key: 1, d: 'M3 9h18M8 2.5v4M16 2.5v4' })],
+    clock: [React.createElement('circle', { key: 0, cx: 12, cy: 12, r: 9 }), React.createElement('path', { key: 1, d: 'M12 7v5l3 2' })],
+    bank: [React.createElement('path', { key: 0, d: 'M3 10l9-6 9 6M5 10v9h14v-9' }), React.createElement('path', { key: 1, d: 'M9 19v-5h6v5' })],
+    plus: [React.createElement('path', { key: 0, d: 'M12 5v14M5 12h14' })],
+    upload: [React.createElement('path', { key: 0, d: 'M12 3v12M7 10l5 5 5-5M5 21h14' })],
+    grid: [React.createElement('rect', { key: 0, x: 3, y: 3, width: 7, height: 7, rx: 1.5 }), React.createElement('rect', { key: 1, x: 14, y: 3, width: 7, height: 7, rx: 1.5 }), React.createElement('rect', { key: 2, x: 3, y: 14, width: 7, height: 7, rx: 1.5 }), React.createElement('rect', { key: 3, x: 14, y: 14, width: 7, height: 7, rx: 1.5 })],
+    users: [React.createElement('circle', { key: 0, cx: 9, cy: 8, r: 3.5 }), React.createElement('path', { key: 1, d: 'M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M17 14c2 .5 4 2 4 6' })],
+    shield: [React.createElement('path', { key: 0, d: 'M12 3l8 3v6c0 4.5-3.2 7.5-8 9-4.8-1.5-8-4.5-8-9V6l8-3z' })],
+  };
+  return React.createElement('svg', P, map[name] || map.grid);
+};
+
+const miniIcon = (name, color, size) => {
+  const P = { width: size || 19, height: size || 19, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const map = {
+    book: [React.createElement('path', { key: 0, d: 'M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z' }), React.createElement('path', { key: 1, d: 'M9 8h7' })],
+    users: [React.createElement('circle', { key: 0, cx: 9, cy: 8, r: 3.5 }), React.createElement('path', { key: 1, d: 'M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5' })],
+    check: [React.createElement('path', { key: 0, d: 'M5 12l5 5L20 7' })],
+    door: [React.createElement('path', { key: 0, d: 'M3 21h18M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M14 12h.5' })],
+    clock: [React.createElement('circle', { key: 0, cx: 12, cy: 12, r: 9 }), React.createElement('path', { key: 1, d: 'M12 7v5l3 2' })],
+    alert: [React.createElement('path', { key: 0, d: 'M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z' })],
+    flag: [React.createElement('path', { key: 0, d: 'M4 21V4h13l-2 4 2 4H4' })],
+    list: [React.createElement('path', { key: 0, d: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01' })],
+    abc: [React.createElement('path', { key: 0, d: 'M4 17l3-9 3 9M5 14h4M14 8v9M14 8h3a2 2 0 0 1 0 4h-3M14 12h3.5a2.5 2.5 0 0 1 0 5H14' })],
+    edit: [React.createElement('path', { key: 0, d: 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z' })],
+    link: [React.createElement('path', { key: 0, d: 'M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1' })],
+    move: [React.createElement('path', { key: 0, d: 'M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20' })],
+    file: [React.createElement('path', { key: 0, d: 'M6 2h9l5 5v15H6z' }), React.createElement('path', { key: 1, d: 'M14 2v6h6' })],
+    key: [React.createElement('circle', { key: 0, cx: 8, cy: 15, r: 4 }), React.createElement('path', { key: 1, d: 'M10.8 12.2 20 3M16 7l3 3' })],
+    eye: [React.createElement('path', { key: 0, d: 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z' }), React.createElement('circle', { key: 1, cx: 12, cy: 12, r: 3 })],
+    eyeOff: [React.createElement('path', { key: 0, d: 'M3 3l18 18M10.6 10.6a3 3 0 0 0 4.2 4.2M9.9 5.2A9.5 9.5 0 0 1 12 5c6.5 0 10 7 10 7a16 16 0 0 1-2.6 3.5M6.5 6.6A16 16 0 0 0 2 12s3.5 7 10 7a9.5 9.5 0 0 0 2.1-.2' })],
+  };
+  return React.createElement('svg', P, map[name] || map.check);
+};
+
+const DEFAULT_IMPORT = `1. อวัยวะใดทำหน้าที่สูบฉีดเลือดไปเลี้ยงร่างกาย
+ก. ปอด
+*ข. หัวใจ
+ค. ตับ
+ง. ไต
+
+2. พืชสร้างอาหารด้วยกระบวนการใด
+ก. การหายใจ
+*ข. การสังเคราะห์ด้วยแสง
+ค. การคายน้ำ
+ง. การลำเลียง
+
+3. สารใดเป็นตัวทำละลายสากล
+*ก. น้ำ
+ข. แอลกอฮอล์
+ค. น้ำมัน
+ง. อากาศ
+
+4. แรงชนิดใดดึงวัตถุเข้าหาศูนย์กลางโลก
+ก. แรงเสียดทาน
+ข. แรงตึง
+*ค. แรงโน้มถ่วง
+ง. แรงพยุง`;
+
+class Component extends DCLogic {
+  state = {
+    screen: 'home',
+    pin: '',
+    pinError: false,
+    answers: {},
+    timeLeft: 75 * 60,
+    currentPage: 1,
+    saving: false,
+    supPin: '4 8 2 7 1 5',
+    perm: {},
+    correctIdx: 1,
+    shuffle: true,
+    importText: DEFAULT_IMPORT,
+    submitTime: '',
+    mask: true,
+    peekRow: null,
+  };
+
+  componentDidMount() {
+    this._t = setInterval(() => {
+      if (this.state.screen === 'student-exam' && this.state.timeLeft > 0) this.setState(s => ({ timeLeft: s.timeLeft - 1 }));
+    }, 1000);
+  }
+  componentWillUnmount() { clearInterval(this._t); if (this._save) clearTimeout(this._save); if (this._peek) clearTimeout(this._peek); }
+
+  go(screen) { this.setState({ screen }); if (typeof window !== 'undefined') window.scrollTo(0, 0); }
+
+  pressKey(k) {
+    if (k === 'del') { this.setState(s => ({ pin: s.pin.slice(0, -1), pinError: false })); return; }
+    if (k === 'clr') { this.setState({ pin: '', pinError: false }); return; }
+    this.setState(s => (s.pin.length >= 6 ? {} : { pin: s.pin + k, pinError: false }));
+  }
+
+  start() {
+    if (this.state.pin.length < 6) { this.setState({ pinError: true }); return; }
+    this.go('student-exam');
+  }
+
+  pick(n, label) {
+    this.setState(s => ({ answers: Object.assign({}, s.answers, { [n]: label }), saving: true, peekRow: s.mask ? n : null }));
+    if (this._save) clearTimeout(this._save);
+    this._save = setTimeout(() => this.setState({ saving: false }), 800);
+    if (this.state.mask) { if (this._peek) clearTimeout(this._peek); this._peek = setTimeout(() => this.setState({ peekRow: null }), 1400); }
+  }
+
+  toggleMask() { this.setState(s => ({ mask: !s.mask, peekRow: null })); }
+  peek(n) { this.setState({ peekRow: n }); if (this._peek) clearTimeout(this._peek); this._peek = setTimeout(() => this.setState({ peekRow: null }), 3500); }
+
+  submit() {
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2, '0'), mm = String(d.getMinutes()).padStart(2, '0');
+    this.setState({ submitTime: hh + ':' + mm + ' น.' });
+    this.go('student-done');
+  }
+
+  fmt(t) { const m = Math.floor(t / 60), s = t % 60; return m + ':' + String(s).padStart(2, '0'); }
+
+  parseImport(txt) {
+    const blocks = txt.split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+    const out = [];
+    blocks.forEach(b => {
+      const lines = b.split('\n').map(l => l.trim()).filter(Boolean);
+      if (!lines.length) return;
+      const qm = lines[0].match(/^(\d+)[.).]?\s*(.*)$/);
+      if (!qm) return;
+      const choices = [];
+      for (let i = 1; i < lines.length; i++) {
+        let l = lines[i]; let correct = false;
+        if (l.startsWith('*')) { correct = true; l = l.slice(1).trim(); }
+        const cm = l.match(/^([ก-ฮa-dA-D])[.).]?\s*(.*)$/);
+        if (cm) choices.push({ label: cm[1], text: cm[2], correct });
+      }
+      out.push({ num: qm[1], text: qm[2], choices });
+    });
+    return out;
+  }
+
+  renderVals() {
+    const S = this.state;
+    const sc = S.screen;
+    const sheetRole = sc.startsWith('teacher') ? 'teacher' : sc === 'manager' || sc === 'permission' ? 'manager' : sc;
+
+    // ---- role / shell ----
+    const shellScreens = ['supervisor', 'deputy', 'manager', 'permission', 'teacher-list', 'build', 'import', 'admin'];
+    const isShell = shellScreens.includes(sc);
+    let role = 'manager';
+    if (sc === 'supervisor') role = 'supervisor';
+    else if (sc === 'deputy') role = 'deputy';
+    else if (sc === 'manager' || sc === 'permission') role = 'manager';
+    else if (sc === 'teacher-list' || sc === 'build' || sc === 'import') role = 'teacher';
+    else if (sc === 'admin') role = 'admin';
+
+    const roleMeta = {
+      supervisor: { label: 'ผู้คุมห้องสอบ', user: 'อ.สมหญิง รักเรียน', color: '#7c3aed', title: 'ควบคุมห้องสอบ', sub: 'แจ้งรหัสเข้าสอบและติดตามผู้เข้าสอบในห้อง' },
+      deputy: { label: 'รองฯ ฝ่ายวิชาการ', user: 'ดร.วิชัย ปัญญาดี', color: '#0891b2', title: 'แดชบอร์ดติดตามการสอบ', sub: 'ภาพรวมการดำเนินการสอบทั้งโรงเรียนแบบเรียลไทม์' },
+      manager: { label: 'ผู้จัดการสอบ', user: 'อ.ประเสริฐ จัดการ', color: '#2563eb', title: sc === 'permission' ? 'อนุญาตสอบนอกเวลา' : 'ตารางสอบปลายภาค', sub: sc === 'permission' ? 'พิจารณาคำขอสอบนอกเวลาของนักเรียน' : 'กำหนดวันสอบ ห้องสอบ วิชา และรหัสเข้าสอบ' },
+      teacher: { label: 'ครูผู้ออกข้อสอบ', user: 'อ.มาลี ใจงาม', color: '#d97706', title: sc === 'build' ? 'สร้างข้อสอบ' : sc === 'import' ? 'นำเข้าข้อสอบ (Text)' : 'คลังข้อสอบ', sub: sc === 'build' ? 'เลือกรูปแบบและกำหนดคำตอบที่ถูกต้อง' : sc === 'import' ? 'เตรียมข้อสอบนอกระบบแล้ววางเข้ามาได้ทันที' : 'จัดการชุดข้อสอบทั้งหมดของคุณ' },
+      admin: { label: 'ผู้ดูแลระบบ', user: 'แอดมิน ระบบ', color: '#475569', title: 'จัดการผู้ใช้งาน', sub: 'เพิ่ม แก้ไข และรีเซ็ตรหัสผ่านผู้ใช้ในระบบ' },
+    };
+    const rm = roleMeta[role];
+
+    const navConfig = {
+      supervisor: [{ key: 'supervisor', label: 'ห้องสอบของฉัน', icon: 'door' }],
+      deputy: [{ key: 'deputy', label: 'แดชบอร์ด', icon: 'grid' }],
+      manager: [{ key: 'manager', label: 'ตารางสอบ', icon: 'calendar' }, { key: 'permission', label: 'อนุญาตสอบนอกเวลา', icon: 'clock' }],
+      teacher: [{ key: 'teacher-list', label: 'คลังข้อสอบ', icon: 'bank' }, { key: 'build', label: 'สร้างข้อสอบ', icon: 'plus' }, { key: 'import', label: 'นำเข้า (Text)', icon: 'upload' }],
+      admin: [{ key: 'admin', label: 'ผู้ใช้งาน', icon: 'users' }],
+    };
+    const navItems = (navConfig[role] || []).map(n => {
+      const active = n.key === sc;
+      return { label: n.label, go: () => this.go(n.key), bg: active ? '#f0fdfa' : 'transparent', color: active ? '#0f766e' : '#475569', iconColor: active ? '#0f766e' : '#94a3b8', icon: navIcon(n.icon, active ? '#0f766e' : '#94a3b8') };
+    });
+
+    // ---- home ----
+    const roleCards = [
+      { title: 'นักเรียน', role: 'Student', tag: 'เข้าสอบ', desc: 'ลงชื่อและกรอกรหัสเพื่อทำข้อสอบผ่านมือถือหรือคอมพิวเตอร์', icon: ICONS.student, iconBg: '#f0fdfa', open: () => this.go('student-login') },
+      { title: 'ผู้คุมห้องสอบ', role: 'Exam supervisor', tag: 'คุมสอบ', desc: 'ควบคุมห้องสอบและแจ้งรหัสเข้าสอบแก่นักเรียน', icon: ICONS.shield, iconBg: '#f5f3ff', open: () => this.go('supervisor') },
+      { title: 'ผู้จัดการสอบ', role: 'Exam manager', tag: 'จัดตาราง', desc: 'กำหนดวันสอบ ห้องสอบ วิชา และรหัสเข้าสอบ', icon: ICONS.calendar, iconBg: '#eff6ff', open: () => this.go('manager') },
+      { title: 'ครูผู้ออกข้อสอบ', role: 'Teacher', tag: 'ออกข้อสอบ', desc: 'สร้างข้อสอบหลายรูปแบบ หรือนำเข้าเป็นไฟล์ข้อความ', icon: ICONS.pen, iconBg: '#fffbeb', open: () => this.go('teacher-list') },
+      { title: 'รองฯ ฝ่ายวิชาการ', role: 'Academic deputy', tag: 'ติดตาม', desc: 'ดูภาพรวมการดำเนินการสอบทั้งโรงเรียนแบบเรียลไทม์', icon: ICONS.chart, iconBg: '#ecfeff', open: () => this.go('deputy') },
+      { title: 'ผู้ดูแลระบบ', role: 'Admin', tag: 'ดูแลระบบ', desc: 'จัดการบัญชีผู้ใช้และรีเซ็ตรหัสผ่าน', icon: ICONS.cog, iconBg: '#f1f5f9', open: () => this.go('admin') },
+    ];
+    const homeStats = [
+      { value: '1,248', label: 'นักเรียนที่ลงทะเบียนสอบ', icon: miniIcon('users', '#0f766e', 20) },
+      { value: '86', label: 'ชุดข้อสอบในระบบ', icon: miniIcon('book', '#0f766e', 20) },
+      { value: '0', label: 'แผ่นกระดาษข้อสอบที่ต้องทำลาย', icon: miniIcon('check', '#0f766e', 20) },
+    ];
+
+    // ---- student login ----
+    const pinBoxes = [0, 1, 2, 3, 4, 5].map(i => {
+      const ch = S.pin[i] || '';
+      return { char: ch ? '•' : '', border: ch ? '#0f766e' : (i === S.pin.length ? '#5eead4' : '#e2e8f0'), bg: ch ? '#f0fdfa' : '#f8fafc' };
+    });
+    const keypad = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'clr', '0', 'del'].map(k => ({
+      label: k === 'clr' ? 'ล้าง' : k === 'del' ? '⌫' : k,
+      press: () => this.pressKey(k),
+      bg: '#fff', color: (k === 'clr' || k === 'del') ? '#94a3b8' : '#0f172a',
+    }));
+    const ready = S.pin.length === 6;
+
+    // ---- student exam ----
+    const answeredCount = Object.keys(S.answers).length;
+    const labels = ['ก', 'ข', 'ค', 'ง'];
+    const sheetRows = Array.from({ length: 40 }, (_, i) => {
+      const n = i + 1;
+      const answered = !!S.answers[n];
+      const masked = S.mask && answered && S.peekRow !== n;
+      return {
+        n, answered, masked, shown: !masked,
+        rowBg: answered ? '#f0fdfa' : 'transparent',
+        peek: () => this.peek(n),
+        bubbles: labels.map(lb => ({ label: lb, selected: S.answers[n] === lb, pick: () => this.pick(n, lb) })),
+      };
+    });
+    const pdfPages = {
+      1: [
+        { num: 1, text: 'อวัยวะใดทำหน้าที่สูบฉีดเลือดไปเลี้ยงร่างกาย', a: 'ปอด', b: 'หัวใจ', c: 'ตับ', d: 'ไต' },
+        { num: 2, text: 'พืชสร้างอาหารด้วยกระบวนการใด', a: 'การหายใจ', b: 'การสังเคราะห์ด้วยแสง', c: 'การคายน้ำ', d: 'การลำเลียง' },
+        { num: 3, text: 'หน่วยพื้นฐานที่เล็กที่สุดของสิ่งมีชีวิตคือข้อใด', a: 'เนื้อเยื่อ', b: 'อวัยวะ', c: 'เซลล์', d: 'ระบบ' },
+        { num: 4, text: 'แรงชนิดใดดึงวัตถุเข้าหาศูนย์กลางโลก', a: 'แรงเสียดทาน', b: 'แรงตึง', c: 'แรงโน้มถ่วง', d: 'แรงพยุง' },
+      ],
+      2: [
+        { num: 5, text: 'สถานะใดของสสารมีปริมาตรคงที่แต่รูปร่างเปลี่ยนตามภาชนะ', a: 'ของแข็ง', b: 'ของเหลว', c: 'แก๊ส', d: 'พลาสมา' },
+        { num: 6, text: 'กระแสไฟฟ้ามีหน่วยเป็นข้อใด', a: 'โวลต์', b: 'แอมแปร์', c: 'โอห์ม', d: 'วัตต์' },
+        { num: 7, text: 'ดาวเคราะห์ดวงใดอยู่ใกล้ดวงอาทิตย์ที่สุด', a: 'ศุกร์', b: 'โลก', c: 'พุธ', d: 'อังคาร' },
+        { num: 8, text: 'สารใดเป็นตัวทำละลายสากล', a: 'น้ำ', b: 'แอลกอฮอล์', c: 'น้ำมัน', d: 'อากาศ' },
+      ],
+      3: [
+        { num: 9, text: 'เสียงเดินทางได้เร็วที่สุดในตัวกลางใด', a: 'อากาศ', b: 'น้ำ', c: 'เหล็ก', d: 'สุญญากาศ' },
+        { num: 10, text: 'อวัยวะใดเป็นศูนย์กลางควบคุมระบบประสาท', a: 'หัวใจ', b: 'สมอง', c: 'ปอด', d: 'ตับ' },
+        { num: 11, text: 'พลังงานแสงอาทิตย์เป็นพลังงานประเภทใด', a: 'สิ้นเปลือง', b: 'หมุนเวียน', c: 'นิวเคลียร์', d: 'เคมี' },
+        { num: 12, text: 'ก๊าซใดพืชใช้ในการสังเคราะห์ด้วยแสง', a: 'ออกซิเจน', b: 'ไนโตรเจน', c: 'คาร์บอนไดออกไซด์', d: 'ฮีเลียม' },
+      ],
+      4: [
+        { num: 13, text: 'หน่วยวัดอุณหภูมิในระบบเอสไอคือข้อใด', a: 'เซลเซียส', b: 'ฟาเรนไฮต์', c: 'เคลวิน', d: 'แรงคิน' },
+        { num: 14, text: 'การเปลี่ยนสถานะจากของเหลวเป็นแก๊สเรียกว่าอะไร', a: 'การหลอมเหลว', b: 'การระเหย', c: 'การควบแน่น', d: 'การแข็งตัว' },
+        { num: 15, text: 'เลือดที่มีออกซิเจนสูงไหลออกจากหัวใจทางหลอดเลือดใด', a: 'หลอดเลือดดำ', b: 'หลอดเลือดแดง', c: 'หลอดเลือดฝอย', d: 'น้ำเหลือง' },
+        { num: 16, text: 'ข้อใดเป็นแหล่งพลังงานหมุนเวียน', a: 'ถ่านหิน', b: 'น้ำมัน', c: 'ลม', d: 'ก๊าซธรรมชาติ' },
+      ],
+    };
+    const remaining = 40 - answeredCount;
+    const timeStr = this.fmt(S.timeLeft);
+    const low = S.timeLeft < 300;
+    const mid = S.timeLeft < 600 && !low;
+
+    // ---- supervisor ----
+    const supPinArr = S.supPin.split(' ');
+    const supRaw = [
+      ['ก', 'กชกร แสงทอง', 1, '13001', 'in'], ['จ', 'จิรายุ ทองดี', 2, '13002', 'in'], ['ณ', 'ณัฐวุฒิ ศรีสุข', 3, '13003', 'in'],
+      ['ธ', 'ธนกฤต ใจดี', 12, '13045', 'in'], ['ป', 'ปาริชาติ บุญมี', 13, '13046', 'pending'], ['พ', 'พิมพ์ชนก ดวงแก้ว', 14, '13047', 'in'],
+      ['ม', 'มานพ เกียรติยศ', 21, '13055', 'late'], ['ว', 'วริศรา พงษ์ไพร', 22, '13056', 'pending'],
+    ];
+    const avPalette = [['#ede9fe', '#7c3aed'], ['#dbeafe', '#2563eb'], ['#dcfce7', '#16a34a'], ['#fef3c7', '#d97706'], ['#fee2e2', '#dc2626'], ['#cffafe', '#0891b2']];
+    const supStudents = supRaw.map((r, i) => {
+      const st = r[4];
+      const map = { in: ['เข้าสอบแล้ว', '#16a34a', '#f0fdf4'], pending: ['ยังไม่เข้า', '#d97706', '#fffbeb'], late: ['สอบนอกเวลา', '#0891b2', '#ecfeff'] };
+      const p = avPalette[i % avPalette.length];
+      return { initial: r[0], name: r[1], no: r[2], id: r[3], avBg: p[0], avColor: p[1], status: map[st][0], statusColor: map[st][1], statusBg: map[st][2] };
+    });
+    const supCheckedIn = supRaw.filter(r => r[4] === 'in').length + 22;
+    const supPending = 32 - supCheckedIn;
+
+    // ---- deputy ----
+    const deputyStats = [
+      { value: '6', label: 'ห้องที่กำลังสอบ', delta: 'จาก 8 ห้อง', deltaColor: '#64748b', iconBg: '#ecfeff', icon: miniIcon('door', '#0891b2', 19) },
+      { value: '184', label: 'นักเรียนกำลังสอบ', delta: '+12 เข้าใหม่', deltaColor: '#16a34a', iconBg: '#f0fdfa', icon: miniIcon('users', '#0f766e', 19) },
+      { value: '76%', label: 'ความคืบหน้าเฉลี่ย', delta: 'ตามแผน', deltaColor: '#16a34a', iconBg: '#eff6ff', icon: miniIcon('check', '#2563eb', 19) },
+      { value: '3', label: 'คำขอสอบนอกเวลา', delta: 'รอพิจารณา', deltaColor: '#d97706', iconBg: '#fffbeb', icon: miniIcon('clock', '#d97706', 19) },
+    ];
+    const liveExams = [
+      { room: '304', subject: 'วิทยาศาสตร์', level: 'ม.3', supervisor: 'อ.มาลี', status: 'กำลังสอบ', statusColor: '#16a34a', statusBg: '#f0fdf4', pct: '62%', submitted: 18, total: 32, color: '#0f766e' },
+      { room: '201', subject: 'คณิตศาสตร์', level: 'ม.6', supervisor: 'อ.สมชาย', status: 'กำลังสอบ', statusColor: '#16a34a', statusBg: '#f0fdf4', pct: '45%', submitted: 14, total: 30, color: '#2563eb' },
+      { room: '105', subject: 'ภาษาอังกฤษ', level: 'ม.2', supervisor: 'อ.จันทร์', status: 'ใกล้จบ', statusColor: '#d97706', statusBg: '#fffbeb', pct: '88%', submitted: 29, total: 33, color: '#7c3aed' },
+      { room: '302', subject: 'สังคมศึกษา', level: 'ม.5', supervisor: 'อ.วิภา', status: 'กำลังสอบ', statusColor: '#16a34a', statusBg: '#f0fdf4', pct: '30%', submitted: 9, total: 31, color: '#0891b2' },
+    ];
+    const deputyBars = [
+      { label: 'จ', h: '40%', color: '#99f6e4' }, { label: 'อ', h: '58%', color: '#5eead4' }, { label: 'พ', h: '72%', color: '#2dd4bf' },
+      { label: 'พฤ', h: '90%', color: '#0f766e' }, { label: 'ศ', h: '64%', color: '#14b8a6' }, { label: 'ส', h: '25%', color: '#ccfbf1' }, { label: 'อา', h: '15%', color: '#ccfbf1' },
+    ];
+    const deputyAlerts = [
+      { bg: '#fffbeb', icon: miniIcon('clock', '#d97706', 16), text: 'ห้อง 201 มีนักเรียน 2 คนเหลือเวลาน้อยกว่า 5 นาที' },
+      { bg: '#fee2e2', icon: miniIcon('alert', '#dc2626', 16), text: 'ห้อง 302 นักเรียน 1 คนหลุดการเชื่อมต่อ กำลังเชื่อมต่อใหม่' },
+      { bg: '#ecfeff', icon: miniIcon('flag', '#0891b2', 16), text: 'คำขอสอบนอกเวลา 3 รายการรอผู้จัดการสอบพิจารณา' },
+    ];
+
+    // ---- manager schedule ----
+    const subjColors = ['#0f766e', '#2563eb', '#7c3aed', '#0891b2', '#d97706', '#16a34a'];
+    const schedRaw = [
+      ['09:00', '18 มี.ค.', 'วิทยาศาสตร์', 'ม.3', 'วิทย์', '304', 'อ.มาลี ใจงาม', '482715', 'active', 'กำลังสอบ'],
+      ['09:00', '18 มี.ค.', 'คณิตศาสตร์', 'ม.6', 'คณิต', '201', 'อ.สมชาย ตั้งใจ', '917364', 'active', 'กำลังสอบ'],
+      ['11:00', '18 มี.ค.', 'ภาษาอังกฤษ', 'ม.2', 'อังกฤษ', '105', 'อ.จันทร์ ส่องแสง', '550238', 'ready', 'พร้อมสอบ'],
+      ['13:00', '18 มี.ค.', 'สังคมศึกษา', 'ม.5', 'สังคม', '302', 'อ.วิภา ดีงาม', '208461', 'ready', 'พร้อมสอบ'],
+      ['09:00', '19 มี.ค.', 'ภาษาไทย', 'ม.4', 'ไทย', '203', 'อ.สมหญิง รักเรียน', '—', 'draft', 'ร่าง'],
+      ['11:00', '19 มี.ค.', 'สุขศึกษา', 'ม.1', 'สุข', '101', 'อ.ประสิทธิ์ แข็งแรง', '—', 'draft', 'ร่าง'],
+    ];
+    const schedStatus = { active: ['#16a34a', '#f0fdf4'], ready: ['#0f766e', '#f0fdfa'], draft: ['#94a3b8', '#f1f5f9'] };
+    const scheduleRows = schedRaw.map((r, i) => ({
+      time: r[0], date: r[1], subject: r[2], level: r[3], subjAbbr: r[4], room: 'ห้อง ' + r[5], supervisor: r[6], code: r[7],
+      subjColor: subjColors[i % subjColors.length], status: r[9], statusColor: schedStatus[r[8]][0], statusBg: schedStatus[r[8]][1],
+    }));
+
+    // ---- permission ----
+    const permRaw = [
+      { id: 'p1', initial: 'ก', name: 'กิตติพงษ์ มั่นคง', level: 'ม.3/2', subject: 'วิทยาศาสตร์', reason: 'ป่วย (มีใบรับรองแพทย์)', requestDate: '21 มี.ค.' },
+      { id: 'p2', initial: 'ส', name: 'สุดารัตน์ พูนผล', level: 'ม.6/1', subject: 'คณิตศาสตร์', reason: 'แข่งขันกีฬาระดับจังหวัด', requestDate: '21 มี.ค.' },
+      { id: 'p3', initial: 'อ', name: 'อรุณ เรืองศรี', level: 'ม.2/3', subject: 'ภาษาอังกฤษ', reason: 'ติดภารกิจครอบครัว', requestDate: '22 มี.ค.' },
+      { id: 'p4', initial: 'น', name: 'นภัสสร อินทร์ทอง', level: 'ม.5/1', subject: 'สังคมศึกษา', reason: 'ป่วย', requestDate: '22 มี.ค.' },
+    ];
+    const permRequests = permRaw.map((p, i) => {
+      const st = S.perm[p.id];
+      const pal = avPalette[i % avPalette.length];
+      return {
+        initial: p.initial, name: p.name, level: p.level, subject: p.subject, reason: p.reason, requestDate: p.requestDate,
+        avBg: pal[0], avColor: pal[1],
+        pending: !st, done: !!st,
+        approve: () => this.setState(s => ({ perm: Object.assign({}, s.perm, { [p.id]: 'ok' }) })),
+        reject: () => this.setState(s => ({ perm: Object.assign({}, s.perm, { [p.id]: 'no' }) })),
+        resultText: st === 'ok' ? 'อนุมัติแล้ว ✓' : 'ปฏิเสธ', resultColor: st === 'ok' ? '#16a34a' : '#dc2626', resultBg: st === 'ok' ? '#f0fdf4' : '#fef2f2',
+      };
+    });
+
+    // ---- teacher bank ----
+    const examBank = [
+      { abbr: 'วิทย์', color: '#0f766e', title: 'วิทยาศาสตร์ ปลายภาค', level: 'ม.3', updated: 'วันนี้', status: 'เผยแพร่แล้ว', statusColor: '#16a34a', statusBg: '#f0fdf4', types: ['เลือกตอบ', 'สแกน PDF'], count: 40, points: 40 },
+      { abbr: 'คณิต', color: '#2563eb', title: 'คณิตศาสตร์ ปลายภาค', level: 'ม.6', updated: 'เมื่อวาน', status: 'เผยแพร่แล้ว', statusColor: '#16a34a', statusBg: '#f0fdf4', types: ['เลือกตอบ', 'เติมคำ'], count: 30, points: 50 },
+      { abbr: 'ไทย', color: '#7c3aed', title: 'ภาษาไทย ปลายภาค', level: 'ม.4', updated: '2 วันก่อน', status: 'ฉบับร่าง', statusColor: '#d97706', statusBg: '#fffbeb', types: ['เลือกตอบ', 'จับคู่'], count: 35, points: 35 },
+      { abbr: 'สังคม', color: '#0891b2', title: 'สังคมศึกษา ปลายภาค', level: 'ม.5', updated: '3 วันก่อน', status: 'เผยแพร่แล้ว', statusColor: '#16a34a', statusBg: '#f0fdf4', types: ['เลือกตอบ'], count: 50, points: 50 },
+      { abbr: 'อังกฤษ', color: '#d97706', title: 'English Final', level: 'ม.2', updated: 'สัปดาห์ก่อน', status: 'ฉบับร่าง', statusColor: '#d97706', statusBg: '#fffbeb', types: ['เลือกตอบ', 'ลากวาง'], count: 45, points: 45 },
+      { abbr: 'สุข', color: '#16a34a', title: 'สุขศึกษา ปลายภาค', level: 'ม.1', updated: 'สัปดาห์ก่อน', status: 'เผยแพร่แล้ว', statusColor: '#16a34a', statusBg: '#f0fdf4', types: ['ถูก/ผิด'], count: 25, points: 25 },
+    ];
+
+    // ---- teacher build ----
+    const qTypeDefs = [
+      { key: 'mc', label: 'เลือกตอบ', icon: 'list' }, { key: 'fill', label: 'เติมคำ', icon: 'abc' }, { key: 'match', label: 'จับคู่', icon: 'link' },
+      { key: 'drag', label: 'ลากวาง', icon: 'move' }, { key: 'tf', label: 'ถูก/ผิด', icon: 'check' }, { key: 'pdf', label: 'สแกน PDF + กระดาษคำตอบ', icon: 'file' },
+    ];
+    const qTypes = qTypeDefs.map(t => {
+      const active = t.key === 'mc';
+      return { label: t.label, pick: () => {}, border: active ? '#99f6e4' : '#eef2f3', bg: active ? '#f0fdfa' : '#fff', color: active ? '#0f766e' : '#475569', iconColor: active ? '#0f766e' : '#94a3b8', icon: miniIcon(t.icon, active ? '#0f766e' : '#94a3b8', 17) };
+    });
+    const buildChoiceText = ['เนื้อเยื่อ', 'อวัยวะ', 'เซลล์', 'ระบบอวัยวะ'];
+    const buildChoices = buildChoiceText.map((txt, i) => {
+      const correct = i === S.correctIdx;
+      return { label: labels[i], text: txt, correct, setCorrect: () => this.setState({ correctIdx: i }), border: correct ? '#86efac' : '#eef2f3', bg: correct ? '#f0fdf4' : '#fff', dotBorder: correct ? '#16a34a' : '#cbd5e1', dotBg: correct ? '#16a34a' : '#fff' };
+    });
+
+    // ---- import ----
+    const parsed = this.parseImport(S.importText);
+    const parsedQuestions = parsed.map(q => ({
+      num: q.num, text: q.text,
+      choices: q.choices.map(c => ({ label: c.label, text: c.text, correct: c.correct, color: c.correct ? '#15803d' : '#334155', border: c.correct ? '#16a34a' : '#cbd5e1', bg: c.correct ? '#16a34a' : '#fff', labelColor: c.correct ? '#fff' : '#94a3b8' })),
+    }));
+
+    // ---- admin ----
+    const adminStats = [
+      { value: '1,312', label: 'ผู้ใช้งานทั้งหมด', bg: '#f0fdfa', icon: miniIcon('users', '#0f766e', 20) },
+      { value: '48', label: 'ครู/บุคลากร', bg: '#fffbeb', icon: miniIcon('edit', '#d97706', 20) },
+      { value: '6', label: 'บทบาทในระบบ', bg: '#f5f3ff', icon: miniIcon('shield', '#7c3aed', 20) },
+      { value: '2', label: 'คำขอรีเซ็ตรหัส', bg: '#fef2f2', icon: miniIcon('key', '#dc2626', 20) },
+    ];
+    const roleBadge = { Admin: ['#475569', '#f1f5f9'], Teacher: ['#d97706', '#fffbeb'], Manager: ['#2563eb', '#eff6ff'], Deputy: ['#0891b2', '#ecfeff'], Supervisor: ['#7c3aed', '#f5f3ff'], Student: ['#0f766e', '#f0fdfa'] };
+    const adminRaw = [
+      ['แอ', 'แอดมิน ระบบ', 'admin', 'Admin', true], ['ว', 'ดร.วิชัย ปัญญาดี', 'wichai.p', 'Deputy', true],
+      ['ป', 'อ.ประเสริฐ จัดการ', 'prasert.j', 'Manager', true], ['ม', 'อ.มาลี ใจงาม', 'malee.j', 'Teacher', true],
+      ['ส', 'อ.สมหญิง รักเรียน', 'somying.r', 'Supervisor', true], ['จ', 'อ.จันทร์ ส่องแสง', 'chan.s', 'Teacher', false],
+      ['ธ', 'ด.ช. ธนกฤต ใจดี', 'std13045', 'Student', true],
+    ];
+    const adminUsers = adminRaw.map((u, i) => {
+      const p = avPalette[i % avPalette.length];
+      const rb = roleBadge[u[3]];
+      return { initial: u[0], name: u[1], username: '@' + u[2], role: u[3], roleColor: rb[0], roleBg: rb[1], avBg: p[0], avColor: p[1], statusText: u[4] ? 'ใช้งาน' : 'ระงับ', statusColor: u[4] ? '#16a34a' : '#94a3b8' };
+    });
+
+    return {
+      // routing
+      isHome: sc === 'home', isStudentLogin: sc === 'student-login', isStudentExam: sc === 'student-exam', isStudentDone: sc === 'student-done',
+      isShell, isSupervisor: sc === 'supervisor', isDeputy: sc === 'deputy', isManager: sc === 'manager', isPermission: sc === 'permission',
+      isTeacherList: sc === 'teacher-list', isBuild: sc === 'build', isImport: sc === 'import', isAdmin: sc === 'admin',
+      goHome: () => this.go('home'), goBuild: () => this.go('build'), goImport: () => this.go('import'),
+      // shell
+      roleLabel: rm.label, userName: rm.user, userInitial: rm.user.replace(/^[^ ]+ /, '').charAt(0) || rm.user.charAt(0), userColor: rm.color,
+      pageTitle: rm.title, pageSub: rm.sub, navItems, shellLabel: rm.title,
+      // home
+      roleCards, homeStats,
+      // student login
+      pinBoxes, keypad, pinError: S.pinError,
+      startExam: () => this.start(), startBtnBg: ready ? '#0f766e' : '#cbd5e1', startBtnCursor: ready ? 'pointer' : 'not-allowed',
+      // exam
+      timeStr, answeredCount, remaining, progressPct: Math.round(answeredCount / 40 * 100) + '%',
+      sheetRows, pdfQuestions: pdfPages[S.currentPage] || pdfPages[1], currentPage: S.currentPage,
+      maskOn: S.mask, toggleMask: () => this.toggleMask(),
+      maskBg: S.mask ? '#f0fdfa' : '#fff', maskBorder: S.mask ? '#cdeae6' : '#e2e8f0', maskColor: S.mask ? '#0f766e' : '#64748b',
+      maskIcon: miniIcon(S.mask ? 'eyeOff' : 'eye', S.mask ? '#0f766e' : '#64748b', 14),
+      prevPage: () => this.setState(s => ({ currentPage: Math.max(1, s.currentPage - 1) })),
+      nextPage: () => this.setState(s => ({ currentPage: Math.min(4, s.currentPage + 1) })),
+      submitExam: () => this.submit(),
+      saveText: S.saving ? 'กำลังบันทึก...' : 'บันทึกอัตโนมัติแล้ว', saveColor: S.saving ? '#d97706' : '#16a34a', saveAnim: S.saving ? 'animation: examisPulse 1s infinite;' : '',
+      timerBg: low ? '#fef2f2' : mid ? '#fffbeb' : '#f0fdfa', timerBorder: low ? '#fecaca' : mid ? '#fde68a' : '#cdeae6', timerColor: low ? '#dc2626' : mid ? '#d97706' : '#0f766e',
+      // done
+      submitTime: S.submitTime || '—',
+      // supervisor
+      supPin: supPinArr, supStudents, supCheckedIn, supPending, regenPin: () => this.setState({ supPin: Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join(' ') }),
+      // deputy
+      deputyStats, liveExams, deputyBars, deputyAlerts,
+      // manager
+      scheduleRows, permRequests,
+      // teacher
+      examBank, qTypes, buildChoices, activeType: 'เลือกตอบ (Multiple choice)',
+      toggleShuffle: () => this.setState(s => ({ shuffle: !s.shuffle })), shuffleBg: S.shuffle ? '#0f766e' : '#cbd5e1', shuffleLeft: S.shuffle ? '20px' : '2px',
+      // import
+      importText: S.importText, onImportInput: (e) => this.setState({ importText: e.target.value }),
+      loadSample: () => this.setState({ importText: DEFAULT_IMPORT }), parsedQuestions, parsedCount: parsed.length,
+      // admin
+      adminStats, adminUsers,
+    };
+  }
+}
+</script>
+</body>
+</html>
