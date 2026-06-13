@@ -467,6 +467,9 @@ document.getElementById('app').addEventListener('change', e=>{
 document.getElementById('app').addEventListener('keydown', e=>{
   if((e.target.dataset.field==='loginU'||e.target.dataset.field==='loginP')&&e.key==='Enter')login();
   if(e.target.dataset.field==='examCode'&&e.key==='Enter')enterExam();
+  if(e.key==='Enter'&&e.target.dataset.field?.startsWith('bld_'))saveBuilding();
+  if(e.key==='Enter'&&e.target.dataset.field?.startsWith('rm_'))saveRoom();
+  if(e.key==='Enter'&&e.target.dataset.field?.startsWith('sess_'))saveSession();
 });
 
 // ── Icon repaint fix ───────────────────────────────────────────────────────
