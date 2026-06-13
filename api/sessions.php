@@ -23,8 +23,23 @@ function generateCode(): string
     return $code;
 }
 
+function autoSyncStatus(): void
+{
+    $now = date('Y-m-d H:i:s'); // PHP timezone = Asia/Bangkok
+    getDB()->prepare(
+        "UPDATE exam_sessions
+         SET status = CASE
+             WHEN CONCAT(exam_date, ' ', end_time)   < ? THEN 'done'
+             WHEN CONCAT(exam_date, ' ', start_time) <= ? THEN 'active'
+             ELSE 'upcoming'
+         END
+         WHERE status IN ('upcoming', 'active')"
+    )->execute([$now, $now]);
+}
+
 function listSessions(array $me): never
 {
+    autoSyncStatus();
     $db = getDB();
     $rows = $db->query(
         'SELECT s.*, p.title AS paper_title, p.status AS paper_status,
