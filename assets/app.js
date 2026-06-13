@@ -476,7 +476,7 @@ function renderLogin(){
     +'<button data-act="login" '+(state.loginLoading?'disabled':'')+' style="width:100%;padding:14px;background:linear-gradient(135deg,#7B1C1C,#B91C1C);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(185,28,28,0.35);">'
     +(state.loginLoading?'<span class="msi" style="animation:spin 1s linear infinite;font-size:20px;">refresh</span>':'เข้าสู่ระบบ')
     +'</button>'
-    +'<div style="text-align:center;margin-top:16px;font-size:11px;color:var(--txt-4);letter-spacing:0.5px;">v0.2606132028</div>'
+    +'<div style="text-align:center;margin-top:16px;font-size:11px;color:var(--txt-4);letter-spacing:0.5px;">${window.APP_VERSION||'v0.dev'}</div>'
     +'</div>'
     +'</div>';
 }
@@ -517,7 +517,7 @@ function renderShell(){
     +'<span class="msi" style="font-size:20px;">logout</span>'
     +(!collapsed?'<span>ออกจากระบบ</span>':'')
     +'</button>'
-    +(!collapsed?'<div style="text-align:center;width:100%;font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:0.5px;padding-top:4px;">v0.2606132028</div>':'')
+    +(!collapsed?'<div style="text-align:center;width:100%;font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:0.5px;padding-top:4px;">${window.APP_VERSION||'v0.dev'}</div>':'')
     +'</div>'
     +'</aside>'
     +'<div style="flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;">'
