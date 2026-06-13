@@ -18,10 +18,13 @@ $avgSubmit = $total > 0 ? round($submitted / $total * 100) : 0;
 // Today's sessions
 $sessions = $db->query(
     'SELECT s.*, p.title AS paper_title,
+            r.room_code, b.name AS building_name,
             (SELECT COUNT(*) FROM student_exams WHERE session_id = s.id) AS enrolled,
             (SELECT COUNT(*) FROM student_exams WHERE session_id = s.id AND status="submitted") AS submitted
      FROM exam_sessions s
      JOIN exam_papers p ON p.id = s.exam_paper_id
+     LEFT JOIN exam_rooms r ON r.id = s.room_id
+     LEFT JOIN buildings b ON b.id = r.building_id
      ORDER BY s.exam_date DESC, s.start_time ASC
      LIMIT 20'
 )->fetchAll();

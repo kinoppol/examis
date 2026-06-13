@@ -766,7 +766,7 @@ function renderDeputy(){
   sessions.slice(0,10).forEach(s=>{
     sessRows+='<tr style="border-bottom:1px solid var(--bdr-s);">'
       +'<td style="padding:12px 16px;font-weight:600;color:var(--txt-1);">'+esc(s.title||s.exam_title||'—')+'</td>'
-      +'<td style="padding:12px 16px;font-size:13px;color:var(--txt-3);">'+esc(s.room||'—')+'</td>'
+      +'<td style="padding:12px 16px;font-size:13px;color:var(--txt-3);">'+(s.room_code?esc((s.building_name?s.building_name+' ':'')+s.room_code):esc(s.room||'—'))+'</td>'
       +'<td style="padding:12px 16px;font-size:13px;color:var(--txt-3);">'+(s.exam_date||'—')+'</td>'
       +'<td style="padding:12px 16px;">'+sessStatusBadge(s.status)+'</td>'
       +'<td style="padding:12px 16px;font-size:13px;color:var(--txt-2);">'+(s.student_count||0)+' คน</td>'
@@ -812,7 +812,7 @@ function renderManager(){
       +'<div style="font-weight:600;color:var(--txt-1);font-size:14px;">'+esc(s.paper_title||s.exam_title||'—')+'</div>'
       +(s.teacher_name?'<div style="font-size:11px;color:var(--txt-4);margin-top:2px;">ครู: '+esc(s.teacher_name)+'</div>':'')
       +'</td>'
-      +'<td style="padding:13px 16px;font-size:13px;color:var(--txt-3);">'+esc(s.room||'—')+'</td>'
+      +'<td style="padding:13px 16px;font-size:13px;color:var(--txt-3);">'+(s.room_code?esc((s.building_name?s.building_name+' ':'')+s.room_code):esc(s.room||'—'))+'</td>'
       +'<td style="padding:13px 16px;font-size:13px;color:var(--txt-3);">'+(s.exam_date||'—')+'</td>'
       +'<td style="padding:13px 16px;font-size:13px;color:var(--txt-3);">'+(s.start_time||'—')+' – '+(s.end_time||'—')+'</td>'
       +'<td style="padding:13px 16px;">'+sessStatusBadge(s.status)+'</td>'
@@ -1273,7 +1273,7 @@ function renderSvSessionList(){
       +sessStatusBadge(s.status)
       +'</div>'
       +'<div style="display:flex;gap:16px;flex-wrap:wrap;">'
-      +'<span style="font-size:13px;color:var(--txt-3);display:flex;align-items:center;gap:4px;"><span class="msi" style="font-size:16px;">meeting_room</span>'+esc(s.room||'—')+'</span>'
+      +'<span style="font-size:13px;color:var(--txt-3);display:flex;align-items:center;gap:4px;"><span class="msi" style="font-size:16px;">meeting_room</span>'+(s.room_code?esc((s.building_name?s.building_name+' ':'')+s.room_code):esc(s.room||'—'))+'</span>'
       +'<span style="font-size:13px;color:var(--txt-3);display:flex;align-items:center;gap:4px;"><span class="msi" style="font-size:16px;">schedule</span>'+(s.start_time||'—')+'–'+(s.end_time||'—')+'</span>'
       +'<span style="font-size:13px;font-weight:700;color:var(--txt-brand);display:flex;align-items:center;gap:4px;font-family:\'IBM Plex Mono\',monospace;">'+(s.access_code||'—')+'</span>'
       +'</div>'
