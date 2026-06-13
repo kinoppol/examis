@@ -5,6 +5,19 @@ if (!file_exists(__DIR__ . '/config/.installed')) {
     header('Location: setup.php');
     exit;
 }
+
+function appVersion(): string {
+    $headLog = __DIR__ . '/.git/logs/HEAD';
+    if (file_exists($headLog)) {
+        $lines = file($headLog, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $last  = end($lines);
+        if ($last && preg_match('/ (\d{10}) [+-]\d{4}\t/', $last, $m)) {
+            return 'v0.' . date('ymdHi', (int)$m[1]);
+        }
+    }
+    return 'v0.' . date('ymdHi', filemtime(__DIR__ . '/assets/app.js'));
+}
+$APP_VERSION = appVersion();
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -70,7 +83,7 @@ if (!file_exists(__DIR__ . '/config/.installed')) {
 <body>
 <div id="app" style="height:100vh;overflow:hidden;font-family:'Noto Sans Thai',system-ui,sans-serif;"></div>
 <div id="toasts"></div>
-<script>window.APP_VERSION='<?= 'v0.' . date('ymdHi', filemtime(__DIR__ . '/assets/app.js')) ?>';</script>
+<script>window.APP_VERSION='<?= $APP_VERSION ?>';</script>
 <script src="assets/app.js?v=<?= filemtime(__DIR__ . '/assets/app.js') ?>"></script>
 </body>
 </html>
