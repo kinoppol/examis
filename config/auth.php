@@ -1,6 +1,19 @@
 <?php
 declare(strict_types=1);
 
+// Catch all unhandled exceptions and return JSON so the client never gets an empty response
+set_exception_handler(function (Throwable $e): void {
+    if (!headers_sent()) {
+        http_response_code(500);
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-store');
+    }
+    echo json_encode([
+        'error' => 'Server error: ' . $e->getMessage(),
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+});
+
 require_once __DIR__ . '/db.php';
 
 function sessionBoot(): void

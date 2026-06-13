@@ -1,11 +1,17 @@
 <?php
 declare(strict_types=1);
 
-const DB_HOST    = 'localhost';
-const DB_NAME    = 'examis';
-const DB_USER    = 'root';
-const DB_PASS    = '';
-const DB_CHARSET = 'utf8mb4';
+// Production overrides: create config/local.php on the server with real credentials.
+// This file is gitignored and never committed.
+if (file_exists(__DIR__ . '/local.php')) {
+    require_once __DIR__ . '/local.php';
+}
+
+defined('DB_HOST')    || define('DB_HOST',    'localhost');
+defined('DB_NAME')    || define('DB_NAME',    'examis');
+defined('DB_USER')    || define('DB_USER',    'root');
+defined('DB_PASS')    || define('DB_PASS',    '');
+defined('DB_CHARSET') || define('DB_CHARSET', 'utf8mb4');
 
 function getDB(): PDO
 {
