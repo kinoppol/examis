@@ -25,6 +25,8 @@ $APP_VERSION = appVersion();
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EXAMIS — ระบบจัดการสอบปลายภาคออนไลน์</title>
+<link rel="icon" type="image/svg+xml" href="assets/ovec-logo.svg">
+<link rel="apple-touch-icon" href="assets/ovec-logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">

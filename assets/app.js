@@ -458,8 +458,8 @@ function renderLogin(){
     +'<div style="position:absolute;top:16px;right:16px;">'+themeBtn()+'</div>'
     +'<div style="background:var(--bg-card);border-radius:20px;box-shadow:var(--shadow-l);padding:48px 40px;width:100%;max-width:420px;border:1px solid var(--bdr);">'
     +'<div style="text-align:center;margin-bottom:36px;">'
-    +'<div style="width:64px;height:64px;background:linear-gradient(135deg,var(--sb-from),var(--sb-to));border-radius:16px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 8px 24px rgba(107,20,20,0.35);">'
-    +'<span class="msi" style="font-size:32px;color:#fff;">school</span>'
+    +'<div style="display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">'
+    +'<img src="assets/ovec-logo.svg" style="width:72px;height:72px;">'
     +'</div>'
     +'<h1 style="font-size:22px;font-weight:700;color:var(--txt-brand);letter-spacing:-0.5px;">EXAMIS</h1>'
     +'<p style="font-size:13px;color:var(--txt-3);margin-top:4px;">วิทยาลัยอาชีวศึกษาร้อยเอ็ด</p>'
@@ -509,7 +509,7 @@ function renderShell(){
   return '<div style="display:flex;height:100vh;overflow:hidden;">'
     +'<aside style="width:'+sbW+'px;min-width:'+sbW+'px;background:linear-gradient(180deg,var(--sb-from) 0%,var(--sb-to) 100%);display:flex;flex-direction:column;transition:width .25s;overflow:hidden;">'
     +'<div style="padding:'+(collapsed?'20px 0':'20px 20px')+';display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.1);justify-content:'+(collapsed?'center':'flex-start')+'">'
-    +(collapsed?'<span class="msi" style="color:#fff;font-size:28px;">school</span>':'<span class="msi" style="color:#fff;font-size:28px;">school</span><span style="font-weight:700;font-size:17px;color:#fff;letter-spacing:-0.5px;white-space:nowrap;">EXAMIS</span>')
+    +(collapsed?'<img src="assets/ovec-logo.svg" style="width:36px;height:36px;flex-shrink:0;">':'<img src="assets/ovec-logo.svg" style="width:36px;height:36px;flex-shrink:0;"><span style="font-weight:700;font-size:17px;color:#fff;letter-spacing:-0.5px;white-space:nowrap;">EXAMIS</span>')
     +'</div>'
     +'<nav style="flex:1;padding:16px 0;overflow-y:auto;">'+navHtml+'</nav>'
     +'<div style="padding:'+(collapsed?'16px 0':'16px 20px')+';border-top:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;gap:8px;align-items:'+(collapsed?'center':'flex-start')+'">'
@@ -1067,7 +1067,7 @@ function renderStudentEnter(){
   return '<div style="min-height:100vh;background:var(--bg-page);display:flex;flex-direction:column;">'
     +'<div style="background:linear-gradient(135deg,var(--sb-from),var(--sb-to));padding:20px 24px;display:flex;align-items:center;justify-content:space-between;">'
     +'<div style="display:flex;align-items:center;gap:12px;">'
-    +'<span class="msi" style="font-size:28px;color:#fff;">school</span>'
+    +'<img src="assets/ovec-logo.svg" style="width:36px;height:36px;flex-shrink:0;">'
     +'<span style="font-size:18px;font-weight:700;color:#fff;">EXAMIS</span>'
     +'</div>'
     +'<div style="display:flex;align-items:center;gap:8px;">'
@@ -1105,7 +1105,7 @@ function renderStudentExam(){
   const answered=Object.keys(state.answers).length;
 
   const topbar='<div style="background:linear-gradient(135deg,var(--sb-from),var(--sb-to));padding:0 24px;height:60px;display:flex;align-items:center;gap:12px;flex-shrink:0;">'
-    +'<span class="msi" style="font-size:24px;color:#fff;">school</span>'
+    +'<img src="assets/ovec-logo.svg" style="width:32px;height:32px;flex-shrink:0;">'
     +'<span style="font-size:15px;font-weight:700;color:#fff;flex:1;">'+esc(si.exam_title||si.title||'ข้อสอบ')+'</span>'
     +themeBtn('border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#fff;')
     +(!state.examStarted?''
