@@ -68,6 +68,6 @@ if (!file_exists(__DIR__ . '/config/.installed')) {
 <body>
 <div id="app" style="height:100vh;overflow:hidden;font-family:'Noto Sans Thai',system-ui,sans-serif;"></div>
 <div id="toasts"></div>
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=<?= filemtime(__DIR__ . '/assets/app.js') ?>"></script>
 </body>
 </html>
