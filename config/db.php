@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+date_default_timezone_set('Asia/Bangkok');
 
 // Production overrides: create config/local.php on the server with real credentials.
 // This file is gitignored and never committed.

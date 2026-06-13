@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+date_default_timezone_set('Asia/Bangkok');
 
 if (!file_exists(__DIR__ . '/config/.installed')) {
     header('Location: setup.php');
