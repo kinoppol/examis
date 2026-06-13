@@ -228,7 +228,7 @@ function editQuestion(id){
 function cancelEditQ(){
   setState({ editingQId:null, qForm:{...BLANK_QFORM} });
 }
-async function deleteQuestion(id){ try{await api('api/questions.php?id='+id,{method:'DELETE'});toast('ลบคำถามแล้ว');const d=await api('api/questions.php?exam_id='+state.currentExam.id);setState({questions:d,editingQId:state.editingQId===+id?null:state.editingQId,qForm:state.editingQId===+id?{...BLANK_QFORM}:state.qForm});}catch(e){toast(e.message,'err');} }
+async function deleteQuestion(id){ if(!confirm('ยืนยันลบคำถามนี้?'))return; try{await api('api/questions.php?id='+id,{method:'DELETE'});toast('ลบคำถามแล้ว');const d=await api('api/questions.php?exam_id='+state.currentExam.id);setState({questions:d,editingQId:state.editingQId===+id?null:state.editingQId,qForm:state.editingQId===+id?{...BLANK_QFORM}:state.qForm});}catch(e){toast(e.message,'err');} }
 async function importText(){
   const s=state; if(!s.importParsed.length){toast('ไม่พบข้อสอบที่จะนำเข้า','err');return;} if(!s.currentExam){toast('กรุณาเลือกชุดข้อสอบก่อน','err');return;}
   try{ for(const q of s.importParsed){ await api('api/questions.php',{method:'POST',body:{exam_paper_id:s.currentExam.id,type:'mcq',question_text:q.question,options:q.options,correct_answer:q.answer,score:1}}); } toast(`นำเข้า ${s.importParsed.length} ข้อเรียบร้อย`); setState({importParsed:[]}); }catch(e){toast(e.message,'err');}
