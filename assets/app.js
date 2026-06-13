@@ -483,7 +483,6 @@ function renderShell(){
     +'</div>'
     +'<nav style="flex:1;padding:16px 0;overflow-y:auto;">'+navHtml+'</nav>'
     +'<div style="padding:'+(collapsed?'16px 0':'16px 20px')+';border-top:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;gap:8px;align-items:'+(collapsed?'center':'flex-start')+'">'
-    +(!collapsed?renderThemeToggleSb():'')
     +'<button data-act="logout" style="display:flex;align-items:center;gap:8px;padding:'+(collapsed?'10px':'10px 14px')+';background:rgba(255,255,255,0.12);border:none;border-radius:10px;color:rgba(255,255,255,0.8);font-size:13px;font-weight:600;cursor:pointer;justify-content:'+(collapsed?'center':'flex-start')+';width:'+(collapsed?'44px':'100%')+';" data-hover="rgba(255,255,255,0.2)" title="ออกจากระบบ">'
     +'<span class="msi" style="font-size:20px;">logout</span>'
     +(!collapsed?'<span>ออกจากระบบ</span>':'')
