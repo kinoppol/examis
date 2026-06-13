@@ -70,6 +70,36 @@ function toast(msg, type='ok'){
   setTimeout(()=>el.remove(), 3200);
 }
 
+// ── Confirm Modal ──────────────────────────────────────────────────────────
+function confirmModal(title, message=''){
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .15s ease;';
+    overlay.innerHTML = `
+      <div style="background:var(--bg-card);border-radius:16px;box-shadow:var(--shadow-l);width:100%;max-width:380px;overflow:hidden;animation:scaleIn .15s ease;">
+        <div style="padding:24px 24px 0;">
+          <div style="width:52px;height:52px;border-radius:14px;background:var(--st-red-bg);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+            <span class="msi" style="font-size:28px;color:var(--st-red-c);">delete_forever</span>
+          </div>
+          <div style="font-size:17px;font-weight:700;color:var(--txt-1);margin-bottom:8px;">${title}</div>
+          ${message ? `<div style="font-size:14px;color:var(--txt-3);line-height:1.6;">${message}</div>` : ''}
+        </div>
+        <div style="padding:20px 24px 24px;display:flex;gap:10px;justify-content:flex-end;">
+          <button id="cm-cancel" style="padding:10px 20px;background:var(--bg-card2);border:1px solid var(--bdr);border-radius:10px;font-size:14px;font-weight:600;color:var(--txt-2);cursor:pointer;">ยกเลิก</button>
+          <button id="cm-ok" style="padding:10px 20px;background:var(--st-red-c);border:none;border-radius:10px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="msi" style="font-size:16px;">delete</span>ลบ</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const done = ok => { overlay.remove(); document.removeEventListener('keydown', onKey); resolve(ok); };
+    const onKey = e => { if(e.key==='Escape') done(false); if(e.key==='Enter') done(true); };
+    overlay.querySelector('#cm-cancel').onclick = () => done(false);
+    overlay.querySelector('#cm-ok').onclick    = () => done(true);
+    overlay.addEventListener('click', e => { if(e.target===overlay) done(false); });
+    document.addEventListener('keydown', onKey);
+    overlay.querySelector('#cm-ok').focus();
+  });
+}
+
 // ── App state ──────────────────────────────────────────────────────────────
 let _timer = null, _svPoll = null;
 const state = {
@@ -127,7 +157,7 @@ async function saveUser(){
   if(!f.full_name||!f.username||!f.password){toast('กรุณากรอกข้อมูลให้ครบ','err');return;}
   try{ await api('api/users.php',{method:'POST',body:f}); toast('เพิ่มผู้ใช้เรียบร้อย'); setState({showAddUser:false,addForm:{full_name:'',username:'',role:'student',department:'',password:''}}); loadUsers(); }catch(e){toast(e.message,'err');}
 }
-async function deleteUser(id){ if(!confirm('ยืนยันลบผู้ใช้?'))return; try{await api('api/users.php?id='+id,{method:'DELETE'});toast('ลบผู้ใช้เรียบร้อย');loadUsers();}catch(e){toast(e.message,'err');} }
+async function deleteUser(id){ if(!await confirmModal('ลบผู้ใช้งาน','ต้องการลบผู้ใช้รายนี้ออกจากระบบ? การกระทำนี้ไม่สามารถย้อนกลับได้'))return; try{await api('api/users.php?id='+id,{method:'DELETE'});toast('ลบผู้ใช้เรียบร้อย');loadUsers();}catch(e){toast(e.message,'err');} }
 async function toggleUserStatus(id,current){ const s=current==='active'?'inactive':'active'; try{await api('api/users.php?id='+id,{method:'PUT',body:{status:s}});loadUsers();}catch(e){toast(e.message,'err');} }
 
 // ── Deputy data ────────────────────────────────────────────────────────────
@@ -179,7 +209,7 @@ async function publishExam(id,current){
   const s=current==='published'?'draft':'published';
   try{await api('api/exams.php?id='+id,{method:'PUT',body:{status:s}});toast(s==='published'?'เผยแพร่แล้ว':'เปลี่ยนเป็นร่าง');loadMyExams();}catch(e){toast(e.message,'err');}
 }
-async function deleteExam(id){ if(!confirm('ยืนยันลบชุดข้อสอบ?'))return; try{await api('api/exams.php?id='+id,{method:'DELETE'});toast('ลบแล้ว');loadMyExams();setState({currentExam:null});}catch(e){toast(e.message,'err');} }
+async function deleteExam(id){ if(!await confirmModal('ลบชุดข้อสอบ','ต้องการลบชุดข้อสอบนี้? คำถามทั้งหมดในชุดนี้จะถูกลบด้วย'))return; try{await api('api/exams.php?id='+id,{method:'DELETE'});toast('ลบแล้ว');loadMyExams();setState({currentExam:null});}catch(e){toast(e.message,'err');} }
 const BLANK_QFORM = { question_text:'', score:2, options:['','','',''], correct_answer:null, correct_tf:true, fill_answer:'', match_left:['','','',''], match_right:['','','',''], short_guide:'' };
 function _buildQPayload(s){
   const f=s.qForm; let options=null, correct_answer=null;
@@ -228,7 +258,7 @@ function editQuestion(id){
 function cancelEditQ(){
   setState({ editingQId:null, qForm:{...BLANK_QFORM} });
 }
-async function deleteQuestion(id){ if(!confirm('ยืนยันลบคำถามนี้?'))return; try{await api('api/questions.php?id='+id,{method:'DELETE'});toast('ลบคำถามแล้ว');const d=await api('api/questions.php?exam_id='+state.currentExam.id);setState({questions:d,editingQId:state.editingQId===+id?null:state.editingQId,qForm:state.editingQId===+id?{...BLANK_QFORM}:state.qForm});}catch(e){toast(e.message,'err');} }
+async function deleteQuestion(id){ if(!await confirmModal('ลบคำถาม','ต้องการลบคำถามข้อนี้? การกระทำนี้ไม่สามารถย้อนกลับได้'))return; try{await api('api/questions.php?id='+id,{method:'DELETE'});toast('ลบคำถามแล้ว');const d=await api('api/questions.php?exam_id='+state.currentExam.id);setState({questions:d,editingQId:state.editingQId===+id?null:state.editingQId,qForm:state.editingQId===+id?{...BLANK_QFORM}:state.qForm});}catch(e){toast(e.message,'err');} }
 async function importText(){
   const s=state; if(!s.importParsed.length){toast('ไม่พบข้อสอบที่จะนำเข้า','err');return;} if(!s.currentExam){toast('กรุณาเลือกชุดข้อสอบก่อน','err');return;}
   try{ for(const q of s.importParsed){ await api('api/questions.php',{method:'POST',body:{exam_paper_id:s.currentExam.id,type:'mcq',question_text:q.question,options:q.options,correct_answer:q.answer,score:1}}); } toast(`นำเข้า ${s.importParsed.length} ข้อเรียบร้อย`); setState({importParsed:[]}); }catch(e){toast(e.message,'err');}

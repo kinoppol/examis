@@ -63,6 +63,8 @@ if (!file_exists(__DIR__ . '/config/.installed')) {
   .toast-ok{background:var(--st-green-bg);color:var(--st-green-c);border:1px solid var(--st-green-bdr);}
   .toast-err{background:var(--st-red-bg);color:var(--st-red-c);border:1px solid var(--st-red-bdr);}
   @keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:none;opacity:1}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes scaleIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
 </style>
 </head>
 <body>
