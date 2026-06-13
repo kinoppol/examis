@@ -100,6 +100,20 @@ function confirmModal(title, message=''){
   });
 }
 
+// ── Loading Modal ──────────────────────────────────────────────────────────
+function loadingModal(message='กำลังบันทึกข้อมูล...'){
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .15s ease;';
+  overlay.innerHTML = `
+    <div style="background:var(--bg-card);border-radius:16px;box-shadow:var(--shadow-l);padding:28px 32px;display:flex;align-items:center;gap:16px;animation:scaleIn .15s ease;min-width:240px;">
+      <span style="width:22px;height:22px;border:3px solid var(--bdr);border-top-color:var(--txt-brand);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;display:inline-block;"></span>
+      <span style="font-size:15px;font-weight:600;color:var(--txt-1);">${message}</span>
+    </div>`;
+  overlay.addEventListener('click', e=>e.stopPropagation());
+  document.body.appendChild(overlay);
+  return ()=>overlay.remove();
+}
+
 // ── App state ──────────────────────────────────────────────────────────────
 let _timer = null, _svPoll = null;
 const state = {
@@ -208,6 +222,7 @@ async function loadRoomReport(){ try{const d=await api('api/rooms.php?report=1')
 async function saveBuilding(){
   const f=state.buildingForm;
   if(!f.name.trim()){toast('กรุณากรอกชื่ออาคาร','err');return;}
+  const close=loadingModal('กำลังบันทึกข้อมูลอาคาร...');
   try{
     if(state.editingBuildingId){
       await api('api/buildings.php?id='+state.editingBuildingId,{method:'PUT',body:f});
@@ -218,7 +233,7 @@ async function saveBuilding(){
     }
     setState({buildingForm:{...BLANK_BUILDING},editingBuildingId:null});
     loadBuildings();
-  }catch(e){toast(e.message,'err');}
+  }catch(e){toast(e.message,'err');}finally{close();}
 }
 async function deleteBuilding(id){
   if(!await confirmModal('ลบอาคาร','อาคารนี้และห้องทั้งหมดในอาคารจะถูกลบ'))return;
@@ -232,6 +247,7 @@ function editBuilding(id){
 async function saveRoom(){
   const f=state.roomForm;
   if(!f.building_id||!f.room_code.trim()){toast('กรุณาเลือกอาคารและกรอกรหัสห้อง','err');return;}
+  const close=loadingModal('กำลังบันทึกข้อมูลห้องสอบ...');
   try{
     if(state.editingRoomId){
       await api('api/rooms.php?id='+state.editingRoomId,{method:'PUT',body:f});
@@ -242,7 +258,7 @@ async function saveRoom(){
     }
     setState({roomForm:{...BLANK_ROOM},editingRoomId:null});
     loadRooms();
-  }catch(e){toast(e.message,'err');}
+  }catch(e){toast(e.message,'err');}finally{close();}
 }
 async function deleteRoom(id){
   if(!await confirmModal('ลบห้องสอบ','ต้องการลบห้องนี้? การสอบที่ผูกกับห้องนี้จะไม่ถูกลบ'))return;
