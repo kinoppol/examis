@@ -593,7 +593,7 @@ function renderShell(){
     +'<button data-act="toggleSb" style="width:36px;height:36px;border:none;background:transparent;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--txt-3);" data-hover="var(--bg-hover)">'
     +'<span class="msi" style="font-size:22px;">'+(collapsed?'menu_open':'menu')+'</span>'
     +'</button>'
-    +'<span style="font-weight:700;font-size:16px;color:var(--txt-1);">'+esc(PAGE_TITLES[r]||'')+'</span>'
+    +'<span style="font-weight:700;font-size:16px;color:var(--txt-1);">'+esc(PAGE_TITLES[state.screen||r]||'')+'</span>'
     +'<div style="flex:1;"></div>'
     +themeBtn('margin-right:8px;')
     +'<div style="display:flex;align-items:center;gap:8px;">'
@@ -612,7 +612,7 @@ function renderShell(){
 }
 
 function renderContent(){
-  const r=state.role;
+  const r=state.screen||state.role;
   if(r==='admin')      return renderAdmin();
   if(r==='deputy')     return renderDeputy();
   if(r==='manager')    return renderManager();
