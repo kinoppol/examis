@@ -14,11 +14,11 @@ const Q_TYPES = [
   { id:'short',     label:'อัตนัย / เรียงความ', icon:'notes' },
   { id:'drag',      label:'ลากวาง (Drag&Drop)', icon:'open_with' },
 ];
-const PAGE_TITLES = { admin:'จัดการผู้ใช้งาน', deputy:'ภาพรวมการสอบ', manager:'จัดการการสอบ', teacher:'ข้อสอบของฉัน', supervisor:'ควบคุมห้องสอบ' };
+const PAGE_TITLES = { admin:'จัดการผู้ใช้งาน', deputy:'ภาพรวมการสอบ', manager:'จัดการการสอบ', rooms:'จัดการห้องสอบ', teacher:'ข้อสอบของฉัน', supervisor:'ควบคุมห้องสอบ' };
 const NAV = {
   admin:      [{ label:'ผู้ใช้งาน',    screen:'admin',      icon:'manage_accounts' }],
   deputy:     [{ label:'ภาพรวม',       screen:'deputy',     icon:'dashboard' }],
-  manager:    [{ label:'ตารางสอบ',     screen:'manager',    icon:'calendar_month' }],
+  manager:    [{ label:'ตารางสอบ', screen:'manager', icon:'calendar_month' }, { label:'ห้องสอบ', screen:'rooms', icon:'meeting_room' }],
   teacher:    [{ label:'ข้อสอบของฉัน', tab:'exams',         icon:'description' }, { label:'สร้างข้อสอบ', tab:'builder', icon:'edit_note' }, { label:'นำเข้า (Text)', tab:'import', icon:'upload_file' }],
   supervisor: [{ label:'ห้องสอบ',      screen:'supervisor', icon:'visibility' }],
 };
@@ -109,8 +109,12 @@ const state = {
   addForm:{ full_name:'', username:'', role:'student', department:'', password:'' },
   dashStats:null, dashSessions:[],
   managerTab:'schedule', sessions:[], showNewSess:false, editingSessId:null,
-  sessForm:{ exam_paper_id:'', room:'', exam_date:'', start_time:'', end_time:'', time_limit_minutes:90 },
+  sessForm:{ exam_paper_id:'', room:'', room_id:'', exam_date:'', start_time:'', end_time:'', time_limit_minutes:90 },
   examPapers:[],
+  buildings:[], rooms:[], roomReport:[],
+  roomsTab:'buildings',
+  buildingForm:{name:'', description:''}, editingBuildingId:null,
+  roomForm:{building_id:'', room_code:'', capacity:30, description:''}, editingRoomId:null,
   teacherTab:'exams', myExams:[], currentExam:null, questions:[],
   qType:'mcq', builderCorrect:0, editingQId:null,
   qForm:{ question_text:'', score:2, options:['','','',''], correct_answer:null, correct_tf:true, fill_answer:'', match_left:['','','',''], match_right:['','','',''], short_guide:'' },
@@ -134,7 +138,7 @@ function applyUser(u){
   setState({ screen:map[u.role]||'login', role:u.role, userId:u.id, userFullName:u.full_name, loginErr:'', loginLoading:false });
   if(u.role==='admin')      loadUsers();
   if(u.role==='deputy')     loadDashboard();
-  if(u.role==='manager')    { loadSessions(); loadExamPapers(); }
+  if(u.role==='manager')    { loadSessions(); loadExamPapers(); loadBuildings(); loadRooms(); }
   if(u.role==='teacher')    loadMyExams();
   if(u.role==='supervisor') loadSvSessions();
 }
@@ -166,10 +170,10 @@ async function loadDashboard(){ try{const d=await api('api/dashboard.php');setSt
 // ── Manager data ───────────────────────────────────────────────────────────
 async function loadSessions(){ try{const d=await api('api/sessions.php');setState({sessions:d});}catch(e){toast(e.message,'err');} }
 async function loadExamPapers(){ try{const d=await api('api/exams.php');setState({examPapers:d});}catch(e){} }
-const BLANK_SESS = { exam_paper_id:'', room:'', exam_date:'', start_time:'', end_time:'', time_limit_minutes:90 };
+const BLANK_SESS = { exam_paper_id:'', room:'', room_id:'', exam_date:'', start_time:'', end_time:'', time_limit_minutes:90 };
 async function saveSession(){
   const f=state.sessForm;
-  if(!f.exam_paper_id||!f.room||!f.exam_date||!f.start_time||!f.end_time){toast('กรุณากรอกข้อมูลให้ครบ','err');return;}
+  if(!f.exam_paper_id||!f.room_id||!f.exam_date||!f.start_time||!f.end_time){toast('กรุณากรอกข้อมูลให้ครบ','err');return;}
   try{
     if(state.editingSessId){
       await api('api/sessions.php?id='+state.editingSessId,{method:'PUT',body:f});
@@ -186,13 +190,68 @@ function editSession(id){
   const s=state.sessions.find(x=>x.id===+id); if(!s)return;
   setState({
     showNewSess:true, editingSessId:s.id,
-    sessForm:{ exam_paper_id:s.exam_paper_id, room:s.room||'', exam_date:s.exam_date||'', start_time:s.start_time||'', end_time:s.end_time||'', time_limit_minutes:s.time_limit_minutes||90 }
+    sessForm:{ exam_paper_id:s.exam_paper_id, room:s.room||'', room_id:s.room_id||'', exam_date:s.exam_date||'', start_time:s.start_time||'', end_time:s.end_time||'', time_limit_minutes:s.time_limit_minutes||90 }
   });
 }
 function cancelEditSession(){
   setState({showNewSess:false, editingSessId:null, sessForm:{...BLANK_SESS}});
 }
 async function updateSessionStatus(id,status){ try{await api('api/sessions.php?id='+id,{method:'PUT',body:{status}});loadSessions();toast('อัปเดตสถานะแล้ว');}catch(e){toast(e.message,'err');} }
+
+// ── Buildings & Rooms data ─────────────────────────────────────────────────
+const BLANK_BUILDING = {name:'', description:''};
+const BLANK_ROOM = {building_id:'', room_code:'', capacity:30, description:''};
+async function loadBuildings(){ try{const d=await api('api/buildings.php');setState({buildings:d});}catch(e){toast(e.message,'err');} }
+async function loadRooms(){ try{const d=await api('api/rooms.php');setState({rooms:d});}catch(e){toast(e.message,'err');} }
+async function loadRoomReport(){ try{const d=await api('api/rooms.php?report=1');setState({roomReport:d});}catch(e){toast(e.message,'err');} }
+
+async function saveBuilding(){
+  const f=state.buildingForm;
+  if(!f.name.trim()){toast('กรุณากรอกชื่ออาคาร','err');return;}
+  try{
+    if(state.editingBuildingId){
+      await api('api/buildings.php?id='+state.editingBuildingId,{method:'PUT',body:f});
+      toast('แก้ไขข้อมูลอาคารแล้ว');
+    } else {
+      await api('api/buildings.php',{method:'POST',body:f});
+      toast('เพิ่มอาคารแล้ว');
+    }
+    setState({buildingForm:{...BLANK_BUILDING},editingBuildingId:null});
+    loadBuildings();
+  }catch(e){toast(e.message,'err');}
+}
+async function deleteBuilding(id){
+  if(!await confirmModal('ลบอาคาร','อาคารนี้และห้องทั้งหมดในอาคารจะถูกลบ'))return;
+  try{await api('api/buildings.php?id='+id,{method:'DELETE'});toast('ลบอาคารแล้ว');loadBuildings();loadRooms();}catch(e){toast(e.message,'err');}
+}
+function editBuilding(id){
+  const b=state.buildings.find(x=>x.id===+id); if(!b)return;
+  setState({editingBuildingId:b.id,buildingForm:{name:b.name,description:b.description||''}});
+}
+
+async function saveRoom(){
+  const f=state.roomForm;
+  if(!f.building_id||!f.room_code.trim()){toast('กรุณาเลือกอาคารและกรอกรหัสห้อง','err');return;}
+  try{
+    if(state.editingRoomId){
+      await api('api/rooms.php?id='+state.editingRoomId,{method:'PUT',body:f});
+      toast('แก้ไขข้อมูลห้องแล้ว');
+    } else {
+      await api('api/rooms.php',{method:'POST',body:f});
+      toast('เพิ่มห้องสอบแล้ว');
+    }
+    setState({roomForm:{...BLANK_ROOM},editingRoomId:null});
+    loadRooms();
+  }catch(e){toast(e.message,'err');}
+}
+async function deleteRoom(id){
+  if(!await confirmModal('ลบห้องสอบ','ต้องการลบห้องนี้? การสอบที่ผูกกับห้องนี้จะไม่ถูกลบ'))return;
+  try{await api('api/rooms.php?id='+id,{method:'DELETE'});toast('ลบห้องสอบแล้ว');loadRooms();}catch(e){toast(e.message,'err');}
+}
+function editRoom(id){
+  const r=state.rooms.find(x=>x.id===+id); if(!r)return;
+  setState({editingRoomId:r.id,roomForm:{building_id:r.building_id,room_code:r.room_code,capacity:r.capacity,description:r.description||''}});
+}
 
 // ── Teacher data ───────────────────────────────────────────────────────────
 async function loadMyExams(){ try{const d=await api('api/exams.php');setState({myExams:d});}catch(e){toast(e.message,'err');} }
@@ -329,7 +388,7 @@ function matchRight(qId,rightIdx){
 const ACTIONS = {
   login, logout, cycleTheme,
   toggleSb:    ()=>setState({sbCollapsed:!state.sbCollapsed}),
-  navScreen:   a=>{ setState({screen:a}); if(a==='admin')loadUsers(); if(a==='deputy')loadDashboard(); if(a==='manager'){loadSessions();loadExamPapers();} if(a==='supervisor')loadSvSessions(); },
+  navScreen:   a=>{ setState({screen:a}); if(a==='admin')loadUsers(); if(a==='deputy')loadDashboard(); if(a==='manager'){loadSessions();loadExamPapers();loadBuildings();loadRooms();} if(a==='rooms'){loadBuildings();loadRooms();} if(a==='supervisor')loadSvSessions(); },
   navTab:      a=>setState({teacherTab:a}),
   tTab:        a=>setState({teacherTab:a}),
   mTab:        a=>setState({managerTab:a}),
@@ -346,6 +405,11 @@ const ACTIONS = {
   editSession:      a=>editSession(+a),
   cancelEditSession,
   updateSessStatus: a=>{ const[id,status]=a.split(':'); updateSessionStatus(+id,status); },
+  saveBuilding, deleteBuilding:a=>deleteBuilding(+a), editBuilding:a=>editBuilding(+a),
+  cancelEditBuilding: ()=>setState({editingBuildingId:null,buildingForm:{...BLANK_BUILDING}}),
+  saveRoom, deleteRoom:a=>deleteRoom(+a), editRoom:a=>editRoom(+a),
+  cancelEditRoom: ()=>setState({editingRoomId:null,roomForm:{...BLANK_ROOM}}),
+  roomsTab: a=>{ setState({roomsTab:a}); if(a==='report')loadRoomReport(); },
   openBuilder: a=>{ const ex=state.myExams.find(e=>e.id===+a); if(ex)openBuilder(ex); },
   createExam,
   publishExam: a=>{ const ex=state.myExams.find(e=>e.id===+a); if(ex)publishExam(+a,ex.status); },
@@ -381,6 +445,8 @@ document.getElementById('app').addEventListener('input', e=>{
   if(f==='importText'){state.importText=v;return;}
   if(f.startsWith('add_')){const k=f.slice(4);state.addForm={...state.addForm,[k]:v};return;}
   if(f.startsWith('sess_')){const k=f.slice(5);state.sessForm={...state.sessForm,[k]:v};return;}
+  if(f.startsWith('bld_')){const k=f.slice(4);state.buildingForm={...state.buildingForm,[k]:v};return;}
+  if(f.startsWith('rm_')){const k=f.slice(3);state.roomForm={...state.roomForm,[k]:v};return;}
   if(f==='q_text'){state.qForm={...state.qForm,question_text:v};return;}
   if(f==='q_score'){state.qForm={...state.qForm,score:v};return;}
   if(f==='q_fill_answer'){state.qForm={...state.qForm,fill_answer:v};return;}
@@ -395,6 +461,8 @@ document.getElementById('app').addEventListener('change', e=>{
   if(f==='q_tf'){state.qForm={...state.qForm,correct_tf:v==='true'};render();return;}
   if(f.startsWith('add_')){const k=f.slice(4);state.addForm={...state.addForm,[k]:v};render();return;}
   if(f.startsWith('sess_')){const k=f.slice(5);state.sessForm={...state.sessForm,[k]:v};render();return;}
+  if(f.startsWith('bld_')){const k=f.slice(4);state.buildingForm={...state.buildingForm,[k]:v};render();return;}
+  if(f.startsWith('rm_')){const k=f.slice(3);state.roomForm={...state.roomForm,[k]:v};render();return;}
 });
 document.getElementById('app').addEventListener('keydown', e=>{
   if((e.target.dataset.field==='loginU'||e.target.dataset.field==='loginP')&&e.key==='Enter')login();
@@ -548,6 +616,7 @@ function renderContent(){
   if(r==='admin')      return renderAdmin();
   if(r==='deputy')     return renderDeputy();
   if(r==='manager')    return renderManager();
+  if(r==='rooms')      return renderRooms();
   if(r==='teacher')    return renderTeacher();
   if(r==='supervisor') return renderSupervisor();
   return '';
@@ -756,7 +825,23 @@ function renderManager(){
         +papers.map(p=>'<option value="'+p.id+'"'+(state.sessForm.exam_paper_id==p.id?' selected':'')+'>'+esc(p.title)+(p.teacher_name?' ('+esc(p.teacher_name)+')':'')+'  · '+p.q_count+' ข้อ</option>').join('')
         +'</select>')
       +'</div>'
-      +fld('ห้องสอบ','text','sess_room',state.sessForm.room||'')
+      +(()=>{
+        const blds=state.buildings||[], rms=state.rooms||[];
+        let opts='<option value="">-- เลือกห้องสอบ --</option>';
+        blds.forEach(b=>{
+          const br=rms.filter(r=>r.building_id==b.id);
+          if(!br.length)return;
+          opts+='<optgroup label="'+esc(b.name)+'">';
+          br.forEach(r=>{ opts+='<option value="'+r.id+'"'+(state.sessForm.room_id==r.id?' selected':'')+'>'+esc(r.room_code)+(r.capacity?' ('+r.capacity+' ที่นั่ง)':'')+(r.description?' – '+esc(r.description):'')+'</option>'; });
+          opts+='</optgroup>';
+        });
+        const noRooms=!rms.length;
+        return '<div><label style="display:block;font-size:13px;font-weight:600;color:var(--txt-2);margin-bottom:6px;">ห้องสอบ <span style="color:var(--st-red-c);">*</span></label>'
+          +(noRooms
+            ?'<div style="padding:10px 12px;border:1.5px solid var(--bdr);border-radius:10px;font-size:13px;color:var(--txt-4);background:var(--bg-input);">ยังไม่มีห้องสอบ — <a data-act="navScreen" data-arg="rooms" href="#" style="color:var(--txt-brand);">เพิ่มห้องสอบ</a></div>'
+            :'<select data-field="sess_room_id" style="'+inputStyle()+'">'+opts+'</select>')
+          +'</div>';
+      })()
       +fld('วันที่สอบ','date','sess_exam_date',state.sessForm.exam_date||'')
       +fld('เวลาเริ่ม','time','sess_start_time',state.sessForm.start_time||'')
       +fld('เวลาสิ้นสุด','time','sess_end_time',state.sessForm.end_time||'')
@@ -786,6 +871,157 @@ function renderManager(){
       +'</tr></thead>'
       +'<tbody>'+sessRows+'</tbody>'
       +'</table>');
+}
+
+// ── Rooms Management ───────────────────────────────────────────────────────
+function renderRooms(){
+  const activeTab=state.roomsTab||'buildings';
+  const tabBtn=(id,label,icon)=>'<button data-act="roomsTab" data-arg="'+id+'" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:'+(activeTab===id?'var(--txt-brand)':'transparent')+';color:'+(activeTab===id?'#fff':'var(--txt-3)')+';"><span class="msi" style="font-size:16px;">'+icon+'</span>'+label+'</button>';
+
+  const tabBar='<div style="display:flex;gap:4px;background:var(--bg-card2);padding:6px;border-radius:12px;margin-bottom:20px;width:fit-content;">'
+    +tabBtn('buildings','อาคาร','apartment')
+    +tabBtn('rooms','ห้องสอบ','meeting_room')
+    +tabBtn('report','รายงานการใช้ห้อง','table_chart')
+    +'</div>';
+
+  // ── Buildings tab ──────────────────────────────────────────────────────
+  if(activeTab==='buildings'){
+    const isEdit=!!state.editingBuildingId;
+    const blds=state.buildings||[];
+    const form='<div style="background:var(--bg-form-add);border:1.5px solid '+(isEdit?'var(--txt-brand)':'var(--bdr)')+';border-radius:14px;padding:20px;margin-bottom:20px;">'
+      +'<h3 style="font-size:14px;font-weight:700;color:var(--txt-brand);margin-bottom:14px;">'+(isEdit?'แก้ไขอาคาร':'เพิ่มอาคารใหม่')+'</h3>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">'
+      +fld('ชื่ออาคาร *','text','bld_name',state.buildingForm.name||'','placeholder="เช่น อาคาร 1 หรือ อาคารเรียน A"')
+      +fld('หมายเหตุ','text','bld_description',state.buildingForm.description||'','placeholder="ข้อมูลเพิ่มเติม (ไม่จำเป็น)"')
+      +'</div>'
+      +'<div style="display:flex;gap:10px;">'
+      +btnPrimary('saveBuilding',undefined,isEdit?'บันทึกการแก้ไข':'เพิ่มอาคาร',isEdit?'check':'add')
+      +(isEdit?'<button data-act="cancelEditBuilding" style="padding:10px 18px;background:var(--bg-card2);color:var(--txt-2);border:1px solid var(--bdr);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">ยกเลิก</button>':'')
+      +'</div>'
+      +'</div>';
+
+    let rows='';
+    blds.forEach(b=>{
+      const isEditing=state.editingBuildingId===b.id;
+      rows+='<tr style="border-bottom:1px solid var(--bdr-s);background:'+(isEditing?'var(--bg-brand-soft)':'transparent')+'">'
+        +'<td style="padding:13px 16px;font-weight:600;color:var(--txt-1);">'+esc(b.name)+'</td>'
+        +'<td style="padding:13px 16px;font-size:13px;color:var(--txt-3);">'+(b.description?esc(b.description):'—')+'</td>'
+        +'<td style="padding:13px 16px;text-align:center;"><span style="background:var(--st-blue-bg);color:var(--st-blue-c);border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;">'+b.room_count+' ห้อง</span></td>'
+        +'<td style="padding:13px 16px;"><div style="display:flex;gap:6px;justify-content:flex-end;">'
+        +'<button data-act="editBuilding" data-arg="'+b.id+'" style="width:30px;height:30px;border-radius:7px;border:1px solid var(--bdr);background:var(--bg-card);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--txt-2);" data-hover="var(--bg-hover)"><span class="msi" style="font-size:15px;">edit</span></button>'
+        +btnDanger('deleteBuilding',b.id,'')
+        +'</div></td>'
+        +'</tr>';
+    });
+    const table=card('<table style="width:100%;border-collapse:collapse;">'
+      +'<thead><tr style="border-bottom:2px solid var(--bdr);">'
+      +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">ชื่ออาคาร</th>'
+      +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">หมายเหตุ</th>'
+      +'<th style="padding:10px 16px;text-align:center;font-size:13px;color:var(--txt-3);font-weight:600;">จำนวนห้อง</th>'
+      +'<th style="padding:10px 16px;"></th>'
+      +'</tr></thead>'
+      +'<tbody>'+(rows||'<tr><td colspan="4" style="padding:24px;text-align:center;color:var(--txt-4);font-size:13px;">ยังไม่มีข้อมูลอาคาร</td></tr>')+'</tbody>'
+      +'</table>');
+    return pageTitle('จัดการห้องสอบ')+tabBar+form+table;
+  }
+
+  // ── Rooms tab ─────────────────────────────────────────────────────────
+  if(activeTab==='rooms'){
+    const blds=state.buildings||[], rms=state.rooms||[];
+    const isEdit=!!state.editingRoomId;
+    const form='<div style="background:var(--bg-form-add);border:1.5px solid '+(isEdit?'var(--txt-brand)':'var(--bdr)')+';border-radius:14px;padding:20px;margin-bottom:20px;">'
+      +'<h3 style="font-size:14px;font-weight:700;color:var(--txt-brand);margin-bottom:14px;">'+(isEdit?'แก้ไขห้องสอบ':'เพิ่มห้องสอบใหม่')+'</h3>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:14px;">'
+      +'<div><label style="display:block;font-size:13px;font-weight:600;color:var(--txt-2);margin-bottom:6px;">อาคาร *</label>'
+      +'<select data-field="rm_building_id" style="'+inputStyle()+'">'
+      +'<option value="">-- เลือกอาคาร --</option>'
+      +blds.map(b=>'<option value="'+b.id+'"'+(state.roomForm.building_id==b.id?' selected':'')+'>'+esc(b.name)+'</option>').join('')
+      +'</select></div>'
+      +fld('รหัสห้อง *','text','rm_room_code',state.roomForm.room_code||'','placeholder="เช่น C201"')
+      +fld('ความจุ (ที่นั่ง)','number','rm_capacity',state.roomForm.capacity||30)
+      +fld('หมายเหตุ','text','rm_description',state.roomForm.description||'','placeholder="ชั้น/ปีก (ไม่จำเป็น)"')
+      +'</div>'
+      +'<div style="display:flex;gap:10px;">'
+      +btnPrimary('saveRoom',undefined,isEdit?'บันทึกการแก้ไข':'เพิ่มห้องสอบ',isEdit?'check':'add')
+      +(isEdit?'<button data-act="cancelEditRoom" style="padding:10px 18px;background:var(--bg-card2);color:var(--txt-2);border:1px solid var(--bdr);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">ยกเลิก</button>':'')
+      +'</div>'
+      +'</div>';
+
+    let rows='';
+    rms.forEach(r=>{
+      const isEditing=state.editingRoomId===r.id;
+      rows+='<tr style="border-bottom:1px solid var(--bdr-s);background:'+(isEditing?'var(--bg-brand-soft)':'transparent')+'">'
+        +'<td style="padding:13px 16px;font-weight:600;color:var(--txt-1);">'+esc(r.room_code)+'</td>'
+        +'<td style="padding:13px 16px;font-size:13px;color:var(--txt-3);">'+esc(r.building_name||'—')+'</td>'
+        +'<td style="padding:13px 16px;font-size:13px;color:var(--txt-3);text-align:center;">'+r.capacity+'</td>'
+        +'<td style="padding:13px 16px;font-size:13px;color:var(--txt-3);">'+(r.description?esc(r.description):'—')+'</td>'
+        +'<td style="padding:13px 16px;"><div style="display:flex;gap:6px;justify-content:flex-end;">'
+        +'<button data-act="editRoom" data-arg="'+r.id+'" style="width:30px;height:30px;border-radius:7px;border:1px solid var(--bdr);background:var(--bg-card);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--txt-2);" data-hover="var(--bg-hover)"><span class="msi" style="font-size:15px;">edit</span></button>'
+        +btnDanger('deleteRoom',r.id,'')
+        +'</div></td>'
+        +'</tr>';
+    });
+    const table=card('<table style="width:100%;border-collapse:collapse;">'
+      +'<thead><tr style="border-bottom:2px solid var(--bdr);">'
+      +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">รหัสห้อง</th>'
+      +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">อาคาร</th>'
+      +'<th style="padding:10px 16px;text-align:center;font-size:13px;color:var(--txt-3);font-weight:600;">ความจุ</th>'
+      +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">หมายเหตุ</th>'
+      +'<th style="padding:10px 16px;"></th>'
+      +'</tr></thead>'
+      +'<tbody>'+(rows||'<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--txt-4);font-size:13px;">ยังไม่มีห้องสอบ</td></tr>')+'</tbody>'
+      +'</table>');
+    return pageTitle('จัดการห้องสอบ')+tabBar+form+table;
+  }
+
+  // ── Report tab ────────────────────────────────────────────────────────
+  const report=state.roomReport||[];
+  // Group by room
+  const roomMap={};
+  report.forEach(row=>{
+    const key=row.room_id;
+    if(!roomMap[key]) roomMap[key]={building_name:row.building_name, room_code:row.room_code, capacity:row.capacity, sessions:[]};
+    if(row.session_id) roomMap[key].sessions.push(row);
+  });
+  const statusBadge=s=>s==='active'?'<span style="background:var(--st-green-bg);color:var(--st-green-c);border-radius:5px;padding:2px 8px;font-size:11px;font-weight:700;">กำลังสอบ</span>'
+    :s==='upcoming'?'<span style="background:var(--st-blue-bg);color:var(--st-blue-c);border-radius:5px;padding:2px 8px;font-size:11px;font-weight:700;">รอสอบ</span>'
+    :'<span style="background:var(--st-gray-bg);color:var(--st-gray-c);border-radius:5px;padding:2px 8px;font-size:11px;font-weight:700;">เสร็จสิ้น</span>';
+  let tRows='';
+  Object.values(roomMap).sort((a,b)=>a.building_name.localeCompare(b.building_name)||a.room_code.localeCompare(b.room_code)).forEach(rm=>{
+    const sessCount=rm.sessions.length;
+    if(!sessCount){
+      tRows+='<tr style="border-bottom:1px solid var(--bdr-s);">'
+        +'<td style="padding:12px 16px;font-weight:600;color:var(--txt-1);">'+esc(rm.room_code)+'</td>'
+        +'<td style="padding:12px 16px;font-size:12px;color:var(--txt-3);">'+esc(rm.building_name)+'</td>'
+        +'<td colspan="5" style="padding:12px 16px;font-size:13px;color:var(--txt-4);">ยังไม่มีการสอบ</td></tr>';
+    } else {
+      rm.sessions.forEach((s,i)=>{
+        tRows+='<tr style="border-bottom:1px solid var(--bdr-s);">'
+          +(i===0?'<td style="padding:12px 16px;font-weight:600;color:var(--txt-1);" rowspan="'+sessCount+'">'+esc(rm.room_code)+'</td>'
+                 +'<td style="padding:12px 16px;font-size:12px;color:var(--txt-3);" rowspan="'+sessCount+'">'+esc(rm.building_name)+'</td>':'')
+          +'<td style="padding:12px 16px;font-size:13px;color:var(--txt-2);">'+(s.exam_date||'—')+'</td>'
+          +'<td style="padding:12px 16px;font-size:12px;color:var(--txt-3);">'+(s.start_time||'')+'–'+(s.end_time||'')+'</td>'
+          +'<td style="padding:12px 16px;font-size:13px;color:var(--txt-1);font-weight:500;">'+esc(s.exam_title||'—')+'</td>'
+          +'<td style="padding:12px 16px;font-size:13px;color:var(--txt-3);">'+(s.supervisors?esc(s.supervisors):'—')+'</td>'
+          +'<td style="padding:12px 16px;">'+statusBadge(s.status)+'</td>'
+          +'</tr>';
+      });
+    }
+  });
+  if(!Object.keys(roomMap).length) tRows='<tr><td colspan="7" style="padding:32px;text-align:center;color:var(--txt-4);">ยังไม่มีห้องสอบในระบบ</td></tr>';
+  const table=card('<table style="width:100%;border-collapse:collapse;">'
+    +'<thead><tr style="border-bottom:2px solid var(--bdr);background:var(--bg-card2);">'
+    +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">ห้อง</th>'
+    +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">อาคาร</th>'
+    +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">วันที่สอบ</th>'
+    +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">เวลา</th>'
+    +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">ชุดข้อสอบ</th>'
+    +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">ผู้คุมสอบ</th>'
+    +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">สถานะ</th>'
+    +'</tr></thead>'
+    +'<tbody>'+tRows+'</tbody>'
+    +'</table>');
+  return pageTitle('จัดการห้องสอบ')+tabBar+table;
 }
 
 // ── Teacher ────────────────────────────────────────────────────────────────

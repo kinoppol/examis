@@ -29,11 +29,14 @@ function listSessions(array $me): never
     $rows = $db->query(
         'SELECT s.*, p.title AS paper_title, p.status AS paper_status,
                 u.full_name AS manager_name,
+                r.room_code, b.name AS building_name,
                 (SELECT COUNT(*) FROM student_exams WHERE session_id = s.id) AS enrolled,
                 (SELECT COUNT(*) FROM student_exams WHERE session_id = s.id AND status = "submitted") AS submitted
          FROM exam_sessions s
          JOIN exam_papers p ON p.id = s.exam_paper_id
          JOIN users u ON u.id = s.manager_id
+         LEFT JOIN exam_rooms r ON r.id = s.room_id
+         LEFT JOIN buildings b ON b.id = r.building_id
          ORDER BY s.exam_date DESC, s.start_time DESC'
     )->fetchAll();
     respond($rows);
@@ -43,13 +46,21 @@ function createSession(array $me): never
 {
     $b        = body();
     $paperId  = (int)($b['exam_paper_id'] ?? 0);
+    $roomId   = (int)($b['room_id']       ?? 0) ?: null;
     $room     = trim((string)($b['room']       ?? ''));
     $date     = trim((string)($b['exam_date']  ?? ''));
     $start    = trim((string)($b['start_time'] ?? ''));
     $end      = trim((string)($b['end_time']   ?? ''));
     $limitMin = max(1, (int)($b['time_limit_minutes'] ?? 90));
 
-    if (!$paperId || !$room || !$date || !$start || !$end) {
+    // room text auto-resolved from room_id if provided
+    if ($roomId) {
+        $st = getDB()->prepare('SELECT CONCAT(b.name, " ", r.room_code) FROM exam_rooms r JOIN buildings b ON b.id=r.building_id WHERE r.id=?');
+        $st->execute([$roomId]);
+        $room = (string)($st->fetchColumn() ?: $room);
+    }
+
+    if (!$paperId || !$date || !$start || !$end || (!$room && !$roomId)) {
         fail('ข้อมูลไม่ครบถ้วน');
     }
 
@@ -58,10 +69,10 @@ function createSession(array $me): never
 
     $st = $db->prepare(
         'INSERT INTO exam_sessions
-         (exam_paper_id, room, exam_date, start_time, end_time, access_code, time_limit_minutes, status, manager_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, "upcoming", ?)'
+         (exam_paper_id, room, room_id, exam_date, start_time, end_time, access_code, time_limit_minutes, status, manager_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, "upcoming", ?)'
     );
-    $st->execute([$paperId, $room, $date, $start, $end, $code, $limitMin, $me['id']]);
+    $st->execute([$paperId, $room, $roomId, $date, $start, $end, $code, $limitMin, $me['id']]);
     $id = (int)$db->lastInsertId();
 
     $row = $db->prepare(
@@ -83,6 +94,16 @@ function updateSession(array $me): never
 
     if (isset($b['exam_paper_id']) && (int)$b['exam_paper_id'] > 0) {
         $sets[] = 'exam_paper_id = ?'; $vals[] = (int)$b['exam_paper_id'];
+    }
+    if (isset($b['room_id'])) {
+        $roomId = (int)$b['room_id'] ?: null;
+        $sets[] = 'room_id = ?'; $vals[] = $roomId;
+        if ($roomId) {
+            $st = getDB()->prepare('SELECT CONCAT(b.name, " ", r.room_code) FROM exam_rooms r JOIN buildings b ON b.id=r.building_id WHERE r.id=?');
+            $st->execute([$roomId]);
+            $roomText = $st->fetchColumn();
+            if ($roomText) { $sets[] = 'room = ?'; $vals[] = $roomText; }
+        }
     }
     foreach (['room', 'exam_date', 'start_time', 'end_time'] as $f) {
         if (isset($b[$f]) && trim((string)$b[$f]) !== '') {
