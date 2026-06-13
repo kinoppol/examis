@@ -7,13 +7,10 @@ if (!file_exists(__DIR__ . '/config/.installed')) {
 }
 
 function appVersion(): string {
-    $headLog = __DIR__ . '/.git/logs/HEAD';
-    if (file_exists($headLog)) {
-        $lines = file($headLog, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $last  = end($lines);
-        if ($last && preg_match('/ (\d{10}) [+-]\d{4}\t/', $last, $m)) {
-            return 'v0.' . date('ymdHi', (int)$m[1]);
-        }
+    $versionFile = __DIR__ . '/config/version.txt';
+    if (file_exists($versionFile)) {
+        $ts = (int)trim(file_get_contents($versionFile));
+        if ($ts > 0) return 'v0.' . date('ymdHi', $ts);
     }
     return 'v0.' . date('ymdHi', filemtime(__DIR__ . '/assets/app.js'));
 }
