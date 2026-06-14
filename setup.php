@@ -154,6 +154,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         try { $pdo->exec("ALTER TABLE `exam_sessions` ADD COLUMN `room_id` INT NULL AFTER `room`"); } catch(\Exception $e){}
         try { $pdo->exec("ALTER TABLE `exam_sessions` ADD CONSTRAINT `fk_sess_room` FOREIGN KEY (`room_id`) REFERENCES `exam_rooms`(`id`) ON DELETE SET NULL"); } catch(\Exception $e){}
+        try { $pdo->exec("ALTER TABLE `exam_sessions` ADD COLUMN `semester` VARCHAR(20) NULL AFTER `room_id`"); } catch(\Exception $e){}
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `settings` (
+            `key`        VARCHAR(100) NOT NULL,
+            `value`      TEXT NOT NULL,
+            `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`key`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        try { $pdo->exec("INSERT INTO `settings` (`key`, `value`) VALUES ('summer_term_enabled', '0') ON DUPLICATE KEY UPDATE `key` = `key`"); } catch(\Exception $e){}
 
         $pdo->exec("CREATE TABLE IF NOT EXISTS `session_supervisors` (
             `session_id` INT NOT NULL,

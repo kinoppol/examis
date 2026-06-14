@@ -57,6 +57,18 @@ function listSessions(array $me): never
     respond($rows);
 }
 
+function semesterFromDate(string $date): string
+{
+    // Auto-derive semester label from exam date (Asia/Bangkok timezone already set)
+    $ts    = strtotime($date);
+    $month = (int)date('n', $ts);
+    $beYear = (int)date('Y', $ts) + 543;
+    if ($month >= 5 && $month <= 10) return '1/' . $beYear;
+    if ($month >= 11) return '2/' . $beYear;
+    if ($month <= 2)  return '2/' . ($beYear - 1);
+    return '2/' . ($beYear - 1); // Mar-Apr: term 2 of previous BE year
+}
+
 function createSession(array $me): never
 {
     $b        = body();
@@ -67,6 +79,8 @@ function createSession(array $me): never
     $start    = trim((string)($b['start_time'] ?? ''));
     $end      = trim((string)($b['end_time']   ?? ''));
     $limitMin = max(1, (int)($b['time_limit_minutes'] ?? 90));
+    $semester = trim((string)($b['semester'] ?? ''));
+    if (!$semester && $date) $semester = semesterFromDate($date);
 
     // room text auto-resolved from room_id if provided
     if ($roomId) {
@@ -84,10 +98,10 @@ function createSession(array $me): never
 
     $st = $db->prepare(
         'INSERT INTO exam_sessions
-         (exam_paper_id, room, room_id, exam_date, start_time, end_time, access_code, time_limit_minutes, status, manager_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, "upcoming", ?)'
+         (exam_paper_id, room, room_id, semester, exam_date, start_time, end_time, access_code, time_limit_minutes, status, manager_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, "upcoming", ?)'
     );
-    $st->execute([$paperId, $room, $roomId, $date, $start, $end, $code, $limitMin, $me['id']]);
+    $st->execute([$paperId, $room, $roomId, $semester, $date, $start, $end, $code, $limitMin, $me['id']]);
     $id = (int)$db->lastInsertId();
 
     $row = $db->prepare(
@@ -119,6 +133,9 @@ function updateSession(array $me): never
             $roomText = $st->fetchColumn();
             if ($roomText) { $sets[] = 'room = ?'; $vals[] = $roomText; }
         }
+    }
+    if (isset($b['semester']) && trim((string)$b['semester']) !== '') {
+        $sets[] = 'semester = ?'; $vals[] = trim((string)$b['semester']);
     }
     foreach (['room', 'exam_date', 'start_time', 'end_time'] as $f) {
         if (isset($b[$f]) && trim((string)$b[$f]) !== '') {

@@ -14,11 +14,11 @@ const Q_TYPES = [
   { id:'short',     label:'อัตนัย / เรียงความ', icon:'notes' },
   { id:'drag',      label:'ลากวาง (Drag&Drop)', icon:'open_with' },
 ];
-const PAGE_TITLES = { admin:'จัดการผู้ใช้งาน', deputy:'ภาพรวมการสอบ', manager:'จัดการการสอบ', rooms:'จัดการห้องสอบ', teacher:'ข้อสอบของฉัน', supervisor:'ควบคุมห้องสอบ' };
+const PAGE_TITLES = { admin:'จัดการผู้ใช้งาน', deputy:'ภาพรวมการสอบ', manager:'จัดการการสอบ', rooms:'จัดการห้องสอบ', settings:'ตั้งค่าระบบ', teacher:'ข้อสอบของฉัน', supervisor:'ควบคุมห้องสอบ' };
 const NAV = {
   admin:      [{ label:'ผู้ใช้งาน',    screen:'admin',      icon:'manage_accounts' }],
   deputy:     [{ label:'ภาพรวม',       screen:'deputy',     icon:'dashboard' }],
-  manager:    [{ label:'ตารางสอบ', screen:'manager', icon:'calendar_month' }, { label:'ห้องสอบ', screen:'rooms', icon:'meeting_room' }],
+  manager:    [{ label:'ตารางสอบ', screen:'manager', icon:'calendar_month' }, { label:'ห้องสอบ', screen:'rooms', icon:'meeting_room' }, { label:'ตั้งค่า', screen:'settings', icon:'settings' }],
   teacher:    [{ label:'ข้อสอบของฉัน', tab:'exams',         icon:'description' }, { label:'สร้างข้อสอบ', tab:'builder', icon:'edit_note' }, { label:'นำเข้า (Text)', tab:'import', icon:'upload_file' }],
   supervisor: [{ label:'ห้องสอบ',      screen:'supervisor', icon:'visibility' }],
 };
@@ -122,8 +122,9 @@ const state = {
   users:[], showAddUser:false,
   addForm:{ full_name:'', username:'', role:'student', department:'', password:'' },
   dashStats:null, dashSessions:[],
+  settings:{ summer_term_enabled:'0' },
   managerTab:'schedule', sessions:[], showNewSess:false, editingSessId:null,
-  sessForm:{ exam_paper_id:'', room:'', room_id:'', exam_date:'', start_time:'', end_time:'', time_limit_minutes:90 },
+  sessForm:{ exam_paper_id:'', room:'', room_id:'', semester:'', exam_date:'', start_time:'', end_time:'', time_limit_minutes:90 },
   examPapers:[],
   buildings:[], rooms:[], roomReport:[],
   roomsTab:'buildings',
@@ -152,7 +153,7 @@ function applyUser(u){
   setState({ screen:map[u.role]||'login', role:u.role, userId:u.id, userFullName:u.full_name, loginErr:'', loginLoading:false });
   if(u.role==='admin')      loadUsers();
   if(u.role==='deputy')     loadDashboard();
-  if(u.role==='manager')    { loadSessions(); loadExamPapers(); loadBuildings(); loadRooms(); startSessPoll(); }
+  if(u.role==='manager')    { loadSessions(); loadExamPapers(); loadBuildings(); loadRooms(); loadSettings(); startSessPoll(); }
   if(u.role==='teacher')    loadMyExams();
   if(u.role==='supervisor') loadSvSessions();
 }
@@ -185,10 +186,22 @@ async function loadDashboard(){ try{const d=await api('api/dashboard.php');setSt
 // ── Manager data ───────────────────────────────────────────────────────────
 async function loadSessions(){ try{const d=await api('api/sessions.php');setState({sessions:d});}catch(e){toast(e.message,'err');} }
 async function loadExamPapers(){ try{const d=await api('api/exams.php');setState({examPapers:d});}catch(e){} }
-const BLANK_SESS = { exam_paper_id:'', room:'', room_id:'', exam_date:'', start_time:'', end_time:'', time_limit_minutes:90 };
+async function loadSettings(){ try{const d=await api('api/settings.php');setState({settings:d});}catch(e){} }
+async function toggleSummerTerm(){
+  const next=state.settings.summer_term_enabled==='1'?'0':'1';
+  try{
+    const d=await api('api/settings.php',{method:'PUT',body:{key:'summer_term_enabled',value:next}});
+    setState({settings:d});
+    toast(next==='1'?'เปิดใช้ภาคฤดูร้อนแล้ว':'ปิดใช้ภาคฤดูร้อนแล้ว');
+  }catch(e){toast(e.message,'err');}
+}
+const BLANK_SESS = { exam_paper_id:'', room:'', room_id:'', semester:'', exam_date:'', start_time:'', end_time:'', time_limit_minutes:90 };
+function semLabel(sem){ if(!sem)return '—'; const[t,y]=sem.split('/'); return t==='S'?'ภาคฤดูร้อน/'+y:'ภาค '+t+'/'+y; }
+function currentSemester(summerEnabled){ const now=new Date(),m=now.getMonth()+1,be=now.getFullYear()+543; if(m>=5&&m<=10)return '1/'+be; if(m>=11)return '2/'+be; if(m<=2)return '2/'+(be-1); return summerEnabled?'S/'+(be-1):'2/'+(be-1); }
+function generateSemesters(summerEnabled){ const be=new Date().getFullYear()+543,res=[]; for(let y=be;y>=be-3;y--){ if(summerEnabled)res.push('S/'+y); res.push('2/'+y); res.push('1/'+y); } return res; }
 async function saveSession(){
   const f=state.sessForm;
-  if(!f.exam_paper_id||!f.room_id||!f.exam_date||!f.start_time||!f.end_time){toast('กรุณากรอกข้อมูลให้ครบ','err');return;}
+  if(!f.exam_paper_id||!f.room_id||!f.semester||!f.exam_date||!f.start_time||!f.end_time){toast('กรุณากรอกข้อมูลให้ครบ','err');return;}
   try{
     if(state.editingSessId){
       await api('api/sessions.php?id='+state.editingSessId,{method:'PUT',body:f});
@@ -205,7 +218,7 @@ function editSession(id){
   const s=state.sessions.find(x=>x.id===+id); if(!s)return;
   setState({
     showNewSess:true, editingSessId:s.id,
-    sessForm:{ exam_paper_id:s.exam_paper_id, room:s.room||'', room_id:s.room_id||'', exam_date:s.exam_date||'', start_time:s.start_time||'', end_time:s.end_time||'', time_limit_minutes:s.time_limit_minutes||90 }
+    sessForm:{ exam_paper_id:s.exam_paper_id, room:s.room||'', room_id:s.room_id||'', semester:s.semester||'', exam_date:s.exam_date||'', start_time:s.start_time||'', end_time:s.end_time||'', time_limit_minutes:s.time_limit_minutes||90 }
   });
 }
 function cancelEditSession(){
@@ -405,7 +418,7 @@ function matchRight(qId,rightIdx){
 const ACTIONS = {
   login, logout, cycleTheme,
   toggleSb:    ()=>setState({sbCollapsed:!state.sbCollapsed}),
-  navScreen:   a=>{ setState({screen:a}); if(a==='admin')loadUsers(); if(a==='deputy')loadDashboard(); if(a==='manager'){loadSessions();loadExamPapers();loadBuildings();loadRooms();} if(a==='rooms'){loadBuildings();loadRooms();} if(a==='supervisor')loadSvSessions(); },
+  navScreen:   a=>{ setState({screen:a}); if(a==='admin')loadUsers(); if(a==='deputy')loadDashboard(); if(a==='manager'){loadSessions();loadExamPapers();loadBuildings();loadRooms();} if(a==='rooms'){loadBuildings();loadRooms();} if(a==='settings')loadSettings(); if(a==='supervisor')loadSvSessions(); },
   navTab:      a=>setState({teacherTab:a}),
   tTab:        a=>setState({teacherTab:a}),
   mTab:        a=>setState({managerTab:a}),
@@ -416,7 +429,8 @@ const ACTIONS = {
   saveUser,
   deleteUser:  a=>deleteUser(+a),
   toggleStatus:a=>{ const u=state.users.find(x=>x.id===+a); if(u)toggleUserStatus(+a,u.status); },
-  openNewSess:      ()=>setState({showNewSess:true, editingSessId:null, sessForm:{...BLANK_SESS}}),
+  openNewSess:      ()=>setState({showNewSess:true, editingSessId:null, sessForm:{...BLANK_SESS, semester:currentSemester(state.settings.summer_term_enabled==='1')}}),
+  toggleSummerTerm: ()=>toggleSummerTerm(),
   closeNewSess:     ()=>cancelEditSession(),
   saveSession,
   editSession:      a=>editSession(+a),
@@ -637,6 +651,7 @@ function renderContent(){
   if(r==='deputy')     return renderDeputy();
   if(r==='manager')    return renderManager();
   if(r==='rooms')      return renderRooms();
+  if(r==='settings')   return renderSettings();
   if(r==='teacher')    return renderTeacher();
   if(r==='supervisor') return renderSupervisor();
   return '';
@@ -813,6 +828,7 @@ function renderManager(){
       +'<div style="font-weight:600;color:var(--txt-1);font-size:14px;">'+esc(s.paper_title||s.exam_title||'—')+'</div>'
       +(s.teacher_name?'<div style="font-size:11px;color:var(--txt-4);margin-top:2px;">ครู: '+esc(s.teacher_name)+'</div>':'')
       +'</td>'
+      +'<td style="padding:13px 16px;font-size:12px;"><span style="background:var(--bg-brand-soft);color:var(--txt-brand);border-radius:6px;padding:3px 8px;font-weight:600;white-space:nowrap;">'+semLabel(s.semester||'')+'</span></td>'
       +'<td style="padding:13px 16px;font-size:13px;color:var(--txt-3);">'+(s.room_code?esc((s.building_name?s.building_name+' ':'')+s.room_code):esc(s.room||'—'))+'</td>'
       +'<td style="padding:13px 16px;font-size:13px;color:var(--txt-3);">'+(s.exam_date||'—')+'</td>'
       +'<td style="padding:13px 16px;font-size:13px;color:var(--txt-3);">'+(s.start_time||'—')+' – '+(s.end_time||'—')+'</td>'
@@ -836,6 +852,14 @@ function renderManager(){
       +'<h3 style="font-size:15px;font-weight:700;color:var(--txt-brand);">'+(isEdit?'แก้ไขรายการสอบ':'สร้างรายการสอบใหม่')+'</h3>'
       +(isEdit?'<span style="font-size:12px;color:var(--txt-3);">รหัสเดิม: <b style="font-family:\'IBM Plex Mono\',monospace;color:var(--txt-brand);">'+(state.sessions.find(x=>x.id===editId)||{}).access_code+'</b></span>':'')
       +'</div>'
+      +(()=>{
+        const summerOn=state.settings.summer_term_enabled==='1';
+        const sems=generateSemesters(summerOn);
+        const semOpts='<option value="">-- เลือกภาคการศึกษา --</option>'
+          +sems.map(s=>'<option value="'+s+'"'+(state.sessForm.semester===s?' selected':'')+'>'+semLabel(s)+'</option>').join('');
+        return '<div style="margin-bottom:12px;"><label style="display:block;font-size:13px;font-weight:600;color:var(--txt-2);margin-bottom:6px;">ภาคการศึกษา <span style="color:var(--st-red-c);">*</span></label>'
+          +'<select data-field="sess_semester" style="'+inputStyle()+'">'+semOpts+'</select></div>';
+      })()
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">'
       +'<div><label style="display:block;font-size:13px;font-weight:600;color:var(--txt-2);margin-bottom:6px;">ชุดข้อสอบ <span style="color:var(--st-red-c);">*</span></label>'
       +(papers.length===0
@@ -882,6 +906,7 @@ function renderManager(){
     +card('<table style="width:100%;border-collapse:collapse;">'
       +'<thead><tr style="border-bottom:2px solid var(--bdr);">'
       +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">ชุดข้อสอบ</th>'
+      +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">ภาค</th>'
       +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">ห้อง</th>'
       +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">วันที่</th>'
       +'<th style="padding:10px 16px;text-align:left;font-size:13px;color:var(--txt-3);font-weight:600;">เวลา</th>'
@@ -891,6 +916,33 @@ function renderManager(){
       +'</tr></thead>'
       +'<tbody>'+sessRows+'</tbody>'
       +'</table>');
+}
+
+// ── Settings ───────────────────────────────────────────────────────────────
+function renderSettings(){
+  const summerOn=state.settings.summer_term_enabled==='1';
+  const toggleBtn='<button data-act="toggleSummerTerm" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1.5px solid '+(summerOn?'var(--st-green-bdr)':'var(--bdr)')+';background:'+(summerOn?'var(--st-green-bg)':'var(--bg-card2)')+';color:'+(summerOn?'var(--st-green-c)':'var(--txt-3)')+';font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;">'
+    +'<span class="msi" style="font-size:20px;">'+(summerOn?'toggle_on':'toggle_off')+'</span>'
+    +(summerOn?'เปิดใช้งาน':'ปิดใช้งาน')
+    +'</button>';
+  const semPreview=(()=>{
+    const sems=generateSemesters(summerOn);
+    return sems.slice(0,6).map(s=>'<span style="display:inline-flex;align-items:center;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;background:var(--bg-brand-soft);color:var(--txt-brand);border:1px solid var(--bdr);margin:3px;">'+semLabel(s)+'</span>').join('')+'<span style="font-size:12px;color:var(--txt-4);margin-left:6px;">+ ย้อนหลัง 3 ปี</span>';
+  })();
+  return pageTitle('ตั้งค่าระบบ','ปรับการทำงานของระบบจัดการสอบ')
+    +card('<h3 style="font-size:15px;font-weight:700;color:var(--txt-1);margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span class="msi" style="font-size:20px;color:var(--txt-brand);">school</span>ภาคการศึกษา</h3>'
+      +'<div style="background:var(--bg-card2);border:1px solid var(--bdr);border-radius:12px;padding:20px;margin-bottom:16px;">'
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">'
+      +'<div>'
+      +'<div style="font-size:14px;font-weight:700;color:var(--txt-1);margin-bottom:6px;">ภาคฤดูร้อน (S)</div>'
+      +'<div style="font-size:13px;color:var(--txt-3);line-height:1.6;">เปิดใช้งานเพื่อให้มีภาค S/ปี พ.ศ. ในตัวเลือกการสร้างรายการสอบ<br>และในรายงานการใช้ห้องสอบ</div>'
+      +'</div>'
+      +toggleBtn
+      +'</div>'
+      +'</div>'
+      +'<div style="margin-bottom:8px;font-size:13px;font-weight:600;color:var(--txt-3);">ตัวเลือกภาคที่จะแสดงในแบบฟอร์ม:</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:0;">'+semPreview+'</div>'
+    );
 }
 
 // ── Rooms Management ───────────────────────────────────────────────────────
