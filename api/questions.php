@@ -5,9 +5,8 @@ require_once __DIR__ . '/../config/auth.php';
 $me = requireRole('teacher', 'admin');
 
 $action = $_GET['action'] ?? '';
-if ($action === 'import_text') {
-    importText($me);
-}
+if ($action === 'import_text') importText($me);
+if ($action === 'reorder')     reorderQuestions($me);
 
 match (method()) {
     'GET'    => listQuestions($me),
@@ -136,6 +135,26 @@ function deleteQuestion(array $me): never
     ownerCheck((int)$q['exam_paper_id'], $me);
 
     $db->prepare('DELETE FROM questions WHERE id = ?')->execute([$id]);
+    respond(['ok' => true]);
+}
+
+function reorderQuestions(array $me): never
+{
+    $b   = body();
+    $ids = array_values(array_filter(array_map('intval', (array)($b['ids'] ?? [])), fn($id) => $id > 0));
+    if (empty($ids)) fail('ไม่ระบุ ids');
+
+    $db = getDB();
+    $st = $db->prepare('SELECT exam_paper_id FROM questions WHERE id = ?');
+    $st->execute([$ids[0]]);
+    $q = $st->fetch();
+    if (!$q) fail('ไม่พบข้อสอบ', 404);
+    ownerCheck((int)$q['exam_paper_id'], $me);
+
+    $upd = $db->prepare('UPDATE questions SET order_num = ? WHERE id = ?');
+    foreach ($ids as $i => $id) {
+        $upd->execute([$i + 1, $id]);
+    }
     respond(['ok' => true]);
 }
 
