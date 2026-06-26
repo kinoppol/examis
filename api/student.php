@@ -23,7 +23,8 @@ function enterExam(array $me): never
 
     $db = getDB();
     $st = $db->prepare(
-        'SELECT s.*, p.title AS paper_title, p.id AS paper_id
+        'SELECT s.*, p.title AS paper_title, p.id AS paper_id,
+                p.paper_type, p.pdf_path, p.pdf_choices
          FROM exam_sessions s
          JOIN exam_papers p ON p.id = s.exam_paper_id
          WHERE s.access_code = ?'
@@ -229,7 +230,8 @@ function submitExam(array $me): never
         if ($q['student_answer'] !== null) {
             $upd->execute([$score, $seId, $q['id']]);
         } elseif ($score !== null) {
-            $ins->execute([$seId, $q['id']]);
+            // Record a 0-score row for an unanswered but auto-gradable question.
+            $ins->execute([$seId, $q['id'], null]);
         }
     }
 

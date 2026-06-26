@@ -1,2 +1,5 @@
 config/local.php
 config/version.txt
+
+# Uploaded scanned exam PDFs
+uploads/exams/*.pdf

@@ -89,6 +89,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             `id`          INT          NOT NULL AUTO_INCREMENT,
             `title`       VARCHAR(255) NOT NULL,
             `teacher_id`  INT          NOT NULL,
+            `paper_type`  ENUM('builder','pdf') NOT NULL DEFAULT 'builder',
+            `pdf_path`    VARCHAR(255) DEFAULT NULL,
+            `pdf_choices` TINYINT      DEFAULT NULL,
             `status`      ENUM('draft','published') NOT NULL DEFAULT 'draft',
             `created_at`  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             `updated_at`  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -96,6 +99,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             KEY `fk_paper_teacher` (`teacher_id`),
             CONSTRAINT `fk_paper_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        // PDF-scan exam support (idempotent for installs predating this feature)
+        try { $pdo->exec("ALTER TABLE `exam_papers` ADD COLUMN `paper_type` ENUM('builder','pdf') NOT NULL DEFAULT 'builder' AFTER `teacher_id`"); } catch(\Exception $e){}
+        try { $pdo->exec("ALTER TABLE `exam_papers` ADD COLUMN `pdf_path` VARCHAR(255) DEFAULT NULL AFTER `paper_type`"); } catch(\Exception $e){}
+        try { $pdo->exec("ALTER TABLE `exam_papers` ADD COLUMN `pdf_choices` TINYINT DEFAULT NULL AFTER `pdf_path`"); } catch(\Exception $e){}
 
         $pdo->exec("CREATE TABLE IF NOT EXISTS `questions` (
             `id`             INT  NOT NULL AUTO_INCREMENT,
